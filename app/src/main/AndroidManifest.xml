@@ -8,10 +8,20 @@
     <application
         android:allowBackup="false"
         android:icon="@drawable/icon"
-        android:label="@string/app_name" >
+        android:label="@string/app_name">
         <activity
-            android:name="PocketSphinxActivity"
-            android:label="@string/app_name" >
+            android:name=".PocketSphinxActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="demo.button.ButtonActivity"
+            android:label="@string/title_activity_button"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -19,4 +29,5 @@
             </intent-filter>
         </activity>
     </application>
+
 </manifest>

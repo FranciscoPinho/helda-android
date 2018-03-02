@@ -218,8 +218,8 @@ public class PocketSphinxActivity extends Activity implements
         // of different kind and switch between them
 
         recognizer = SpeechRecognizerSetup.defaultSetup()
-                .setAcousticModel(new File(assetsDir, "en-us-ptm"))
-                .setDictionary(new File(assetsDir, "cmudict-en-us.dict"))
+                .setAcousticModel(new File(assetsDir, "spa-eu-ptm"))
+                .setDictionary(new File(assetsDir, "es.dict"))
 
                 .setRawLogDir(assetsDir) // To disable logging of raw audio comment out this call (takes a lot of space on the device)
 

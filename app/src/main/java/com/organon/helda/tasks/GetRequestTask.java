@@ -20,7 +20,7 @@ public class GetRequestTask extends AsyncTask<Void, Void, String> {
     protected String doInBackground(Void... voids) {
         InputStream inputStream = null;
         HttpURLConnection connection = null;
-        String urlStr = "http://www.mocky.io/v2/5a99f7882f0000e308a7fd48";
+        String urlStr = "http://www.mocky.io/v2/5a9ab39f2f00004e00a7fe06";
         String result = null;
 
         try {

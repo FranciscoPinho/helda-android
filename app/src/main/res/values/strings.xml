@@ -8,6 +8,8 @@
     <string name="digits_caption">To try recognition of digits: say something like \"one two three four five\".</string>
     <string name="forecast_caption">To try recognition of a weather forecast like \"sunny spells on Wednesday\".</string>
     <string name="phone_caption">To try phonetic recognition say anything.</string>
-    <string name="title_activity_button">ButtonActivity</string>
-    <string name="test">Test</string>
+
+    <string name="testButton">Button</string>
+    <string name="testText">Text</string>
+    <string name="title_activity_get_request">GetRequestActivity</string>
 </resources>

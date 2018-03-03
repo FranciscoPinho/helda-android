@@ -1,5 +1,6 @@
 package edu.cmu.pocketsphinx.demo;
 
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.*;
 
 /**
@@ -8,6 +9,8 @@ import static org.junit.Assert.*;
 public class PocketSphinxActivityTest {
     @org.junit.Test
     public void onCreate() throws Exception {
+        assertThat(PocketSphinxActivity.KWS_SEARCH, equalTo("wakeup"));
+        assertThat(PocketSphinxActivity.KEYPHRASE, equalTo("oh mighty computer"));
     }
 
     @org.junit.Test

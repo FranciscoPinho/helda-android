@@ -58,17 +58,17 @@ public class PocketSphinxActivity extends Activity implements
         RecognitionListener {
 
     /* Named searches allow to quickly reconfigure the decoder */
-    private static final String KWS_SEARCH = "wakeup";
-    private static final String FORECAST_SEARCH = "forecast";
-    private static final String DIGITS_SEARCH = "digits";
-    private static final String PHONE_SEARCH = "phones";
-    private static final String MENU_SEARCH = "menu";
+    public static final String KWS_SEARCH = "wakeup";
+    public static final String FORECAST_SEARCH = "forecast";
+    public static final String DIGITS_SEARCH = "digits";
+    public static final String PHONE_SEARCH = "phones";
+    public static final String MENU_SEARCH = "menu";
 
     /* Keyword we are looking for to activate menu */
-    private static final String KEYPHRASE = "oh mighty computer";
+    public static final String KEYPHRASE = "oh mighty computer";
 
     /* Used to handle permission request */
-    private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
+    public static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
 
     private SpeechRecognizer recognizer;
     private HashMap<String, Integer> captions;

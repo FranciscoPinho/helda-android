@@ -10,6 +10,7 @@ public class PocketSphinxActivityTest {
     @org.junit.Test
     public void onCreate() throws Exception {
         assertThat(PocketSphinxActivity.KWS_SEARCH, equalTo("wakeup"));
+        assertThat(PocketSphinxActivity.FORECAST_SEARCH, equalTo("forecast"));
         assertThat(PocketSphinxActivity.KEYPHRASE, equalTo("oh mighty computer"));
     }
 

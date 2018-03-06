@@ -1,4 +1,4 @@
-package com.organon.helda.activities;
+package com.organon.helda.app.activities;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -13,22 +13,19 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.util.concurrent.ExecutionException;
-
 import com.organon.helda.R;
-import com.organon.helda.tasks.GetRequestTask;
+import com.organon.helda.app.data.NetworkManager;
+import com.organon.helda.app.services.TaskService;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-
 
 import edu.cmu.pocketsphinx.Assets;
 import edu.cmu.pocketsphinx.Hypothesis;
 import edu.cmu.pocketsphinx.RecognitionListener;
 import edu.cmu.pocketsphinx.SpeechRecognizer;
 import edu.cmu.pocketsphinx.SpeechRecognizerSetup;
-
 
 public class GetRequestActivity extends AppCompatActivity implements RecognitionListener {
 
@@ -40,10 +37,18 @@ public class GetRequestActivity extends AppCompatActivity implements Recognition
 
     private SpeechRecognizer recognizer;
 
+    private static int task = 0;
+
+    private static final String MODEL = "1PW2A4LKNQ78FKD0";
+    private static final String LOCALE = "es";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_request);
+
+        // Super important, this must be called on application startup
+        NetworkManager.getInstance(this);
 
         // Check if user has given permission to record audio
         int permissionCheck = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO);
@@ -55,21 +60,17 @@ public class GetRequestActivity extends AppCompatActivity implements Recognition
         // so we execute it in async task
         new GetRequestActivity.SetupTask(this).execute();
 
-        final TextView textView = (TextView) findViewById(R.id.textView);
-
-        Button button = (Button) findViewById(R.id.button1);
+        Button button = findViewById(R.id.button1);
         button.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                GetRequestTask request = new GetRequestTask();
-                String response = null;
-                try {
-                    response = request.execute().get();
-                    textView.setText(response);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
+                TaskService.getTaskDescription(MODEL, task, LOCALE, new TaskService.Listener() {
+                    @Override
+                    public void onComplete(Object response) {
+                        TextView textView = findViewById(R.id.textView);
+                        textView.setText(response.toString());
+                        task++;
+                    }
+                });
             }
         });
     }
@@ -149,20 +150,16 @@ public class GetRequestActivity extends AppCompatActivity implements Recognition
     @Override
     public void onResult(Hypothesis hypothesis) {
         if (hypothesis != null) {
-            GetRequestTask request = new GetRequestTask();
-            String response = null;
-            try {
-                response = request.execute().get();
-                TextView textView =(TextView) findViewById(R.id.textView);
-                textView.setText(response);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-            recognizer.startListening(KWS_SEARCH);
+            TaskService.getTaskDescription(MODEL, task, LOCALE, new TaskService.Listener() {
+                @Override
+                public void onComplete(Object response) {
+                    TextView textView = findViewById(R.id.textView);
+                    textView.setText(response.toString());
+                    recognizer.startListening(KWS_SEARCH);
+                    task++;
+                }
+            });
         }
-
     }
 
     @Override
@@ -176,8 +173,6 @@ public class GetRequestActivity extends AppCompatActivity implements Recognition
     public void onEndOfSpeech() {
         return;
     }
-
-
 
     private void setupRecognizer(File assetsDir) throws IOException {
         // The recognizer can be configured to perform multiple searches

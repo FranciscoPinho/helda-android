@@ -1,4 +1,4 @@
-package com.organon.helda.utils;
+package com.organon.helda.app.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;

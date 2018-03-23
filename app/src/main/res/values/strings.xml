@@ -5,4 +5,6 @@
     <string name="helda_caption">Good job! Say \"volver\" to go back</string>
     <string name="testButton">listo</string>
     <string name="testText">Awaiting task</string>
+    <string name="waitRecognizer">Recognizer restarting, Please wait...</string>
+    <string name="recognizerFail">Failed to init recognizer</string>
 </resources>

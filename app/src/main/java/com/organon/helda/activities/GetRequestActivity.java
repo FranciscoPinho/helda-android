@@ -16,11 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.concurrent.ExecutionException;
-
 import com.organon.helda.R;
-import com.organon.helda.tasks.GetRequestTask;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -57,36 +53,36 @@ public class GetRequestActivity extends AppCompatActivity implements Recognition
         // Recognizer initialization is a time-consuming and it involves IO,
         // so we execute it in async task
         new GetRequestActivity.SetupTask( this).execute();
-        EditText keyword_filed = (EditText) findViewById(R.id.keyword);
+        EditText keyword_filed = findViewById(R.id.keyword);
         keyword_filed.setText(KWS_SEARCH);
 
-        Button button = (Button) findViewById(R.id.change_word);
+        Button button = findViewById(R.id.change_word);
         button.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                EditText keyword_filed = (EditText) findViewById(R.id.keyword);
-                GetRequestActivity.this.KWS_SEARCH=keyword_filed.getText().toString();
+                EditText keyword_filed = findViewById(R.id.keyword);
+                GetRequestActivity.KWS_SEARCH=keyword_filed.getText().toString();
                 nr_recognitions=0;
-                TextView textView =(TextView) findViewById(R.id.textView3);
-                textView.setText("Recognizer restarting, Please wait...");
+                TextView textView = findViewById(R.id.textView3);
+                textView.setText(R.string.waitRecognizer);
                 new GetRequestActivity.SetupTask(GetRequestActivity.this).execute();
             }
         });
-        Button less_precision = (Button) findViewById(R.id.less_precision);
+        Button less_precision = findViewById(R.id.less_precision);
         less_precision.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 recognizer_precision*=1e-3;
-                TextView textView =(TextView) findViewById(R.id.textView3);
-                textView.setText("Recognizer restarting, Please wait...");
+                TextView textView = findViewById(R.id.textView3);
+                textView.setText(R.string.waitRecognizer);
                 new GetRequestActivity.SetupTask(GetRequestActivity.this).execute();
             }
         });
-        Button plus_precision = (Button) findViewById(R.id.plus_precision);
+        Button plus_precision = findViewById(R.id.plus_precision);
         plus_precision.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 if(recognizer_precision<0.9)
                     recognizer_precision*=1e3;
-                TextView textView =(TextView) findViewById(R.id.textView3);
-                textView.setText("Recognizer restarting, Please wait...");
+                TextView textView = findViewById(R.id.textView3);
+                textView.setText(R.string.waitRecognizer);
                 new GetRequestActivity.SetupTask(GetRequestActivity.this).execute();
             }
         });
@@ -114,7 +110,7 @@ public class GetRequestActivity extends AppCompatActivity implements Recognition
         protected void onPostExecute(Exception result) {
             if (result != null) {
                 ((TextView) activityReference.get().findViewById(R.id.textView))
-                        .setText("Failed to init recognizer " + result);
+                        .setText(R.string.recognizerFail + "" + result);
             } else {
                 activityReference.get().recognizer.startListening(KWS_SEARCH);
             }
@@ -230,11 +226,9 @@ public class GetRequestActivity extends AppCompatActivity implements Recognition
 
     @Override
     public void onError(Exception error) {
-        return;
     }
 
     @Override
     public void onTimeout() {
-        return;
     }
 }

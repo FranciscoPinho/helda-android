@@ -7,28 +7,77 @@
     tools:context="com.organon.helda.activities.GetRequestActivity">
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/change_word"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="100dp"
-        android:text="@string/testButton"
+        android:layout_marginBottom="150dp"
+        android:text="Update Keyword"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.815"
+        app:layout_constraintStart_toEndOf="@+id/keyword"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintVertical_bias="0.954" />
+
+    <EditText
+        android:id="@+id/keyword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.349"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintVertical_bias="0.294" />
+
+    <Button
+        android:id="@+id/plus_precision"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:layout_marginLeft="250dp"
+        android:text="+ Precision"
+        app:layout_constraintTop_toBottomOf="@+id/keyword"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <Button
+        android:id="@+id/less_precision"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="250dp"
+        android:layout_marginTop="80dp"
+        android:text="- Precision"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/keyword" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="209dp"
+        android:layout_height="29dp"
+        android:layout_marginBottom="50dp"
         android:layout_marginEnd="37dp"
         android:layout_marginStart="37dp"
-        android:layout_marginTop="72dp"
-        android:text="@string/testText"
-        app:layout_constraintBottom_toTopOf="@+id/button1"
+        android:layout_marginTop="150dp"
+        android:text="No recognitions so far"
+        app:layout_constraintBottom_toTopOf="@+id/change_word"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="280dp"
+        android:layout_marginEnd="37dp"
+        android:layout_marginStart="37dp"
+        android:layout_marginTop="40dp"
+        android:text="Current Precision: 1e-27"
+        app:layout_constraintBottom_toTopOf="@+id/change_word"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
 </android.support.constraint.ConstraintLayout>

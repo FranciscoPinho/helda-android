@@ -167,9 +167,6 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         recognizer = SpeechRecognizerSetup.defaultSetup()
                 .setAcousticModel(new File(assetsDir, "spa-eu-ptm"))
                 .setDictionary(new File(assetsDir, "es.dict"))
-
-                .setRawLogDir(assetsDir) // To disable logging of raw audio comment out this call (takes a lot of space on the device)
-
                 .getRecognizer();
         recognizer.addListener(this);
 

@@ -1,6 +1,8 @@
 package com.organon.helda.core.entities;
 
-public class Task extends Entity {
+import java.io.Serializable;
+
+public class Task extends Entity implements Serializable{
     private String description;
 
     private int duration;
@@ -24,5 +26,9 @@ public class Task extends Entity {
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public String toString(){
+        return this.description;
     }
 }

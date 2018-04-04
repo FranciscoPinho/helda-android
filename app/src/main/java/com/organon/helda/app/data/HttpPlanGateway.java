@@ -1,25 +1,30 @@
 package com.organon.helda.app.data;
-
+import java.lang.reflect.Type;
 import android.os.AsyncTask;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.organon.helda.core.entities.Plan;
 import com.organon.helda.core.entities.Task;
-import com.organon.helda.core.gateways.TaskGateway;
+import com.organon.helda.core.gateways.PlanGateway;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class HttpTaskGateway implements TaskGateway {
+public class HttpPlanGateway implements PlanGateway {
     private static final String BASE = "https://helda-server.herokuapp.com/";
 
-    private static String GET_TASK = "plans/%s/tasks/%d";
+    private static String GET_PLAN = "plans/%s";
 
     @Override
-    public Task getTask(String model, int taskNumber, String locale) {
+    public Plan getPlan(String model, String locale) {
         StringBuilder url = new StringBuilder(BASE);
-        url.append(String.format(GET_TASK, model, taskNumber));
+        url.append(String.format(GET_PLAN, model));
 
         Map<String, String> params = new HashMap<>();
         params.put("locale", locale);
@@ -30,11 +35,17 @@ public class HttpTaskGateway implements TaskGateway {
         try {
             boolean error = res.getBoolean("error");
             if (error) return null;
-            return new Task(res.getString("taskDescription"), res.getInt("taskDuration"));
+            return new Plan(res.getString("model"),locale, parseListTasks(res.getJSONArray("tasks")));
         } catch (JSONException e) {
             // Convert the checked exception to an unchecked one
             // @Todo: Probably throw some custom exception
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    public List<Task> parseListTasks(JSONArray tasks){
+        Gson gson = new Gson();
+        Type type = new TypeToken<List<Task>>(){}.getType();
+        return gson.fromJson(tasks.toString(), type);
     }
 }

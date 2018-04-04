@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.organon.helda.R;
 import com.organon.helda.app.data.NetworkManager;
-import com.organon.helda.app.services.TaskService;
+import com.organon.helda.core.entities.Plan;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +27,7 @@ import edu.cmu.pocketsphinx.RecognitionListener;
 import edu.cmu.pocketsphinx.SpeechRecognizer;
 import edu.cmu.pocketsphinx.SpeechRecognizerSetup;
 
-public class GetRequestActivity extends AppCompatActivity implements RecognitionListener {
+public class DisassemblyActivity extends AppCompatActivity implements RecognitionListener {
 
     /* Named searches allow to quickly reconfigure the decoder */
     private static final String KWS_SEARCH = "listo";
@@ -39,14 +39,14 @@ public class GetRequestActivity extends AppCompatActivity implements Recognition
 
     private static int task = 0;
 
-    private static final String MODEL = "1PW2A4LKNQ78FKD0";
-    private static final String LOCALE = "es";
+    private Plan plan;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_get_request);
+        setContentView(R.layout.activity_disassembly);
 
+        plan=(Plan)getIntent().getSerializableExtra("currentPlan");
         // Super important, this must be called on application startup
         NetworkManager.getInstance(this);
 
@@ -58,26 +58,21 @@ public class GetRequestActivity extends AppCompatActivity implements Recognition
         }
         // Recognizer initialization is a time-consuming and it involves IO,
         // so we execute it in async task
-        new GetRequestActivity.SetupTask(this).execute();
+        new DisassemblyActivity.SetupTask(this).execute();
 
         Button button = findViewById(R.id.button1);
         button.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                TaskService.getTaskDescription(MODEL, task, LOCALE, new TaskService.Listener() {
-                    @Override
-                    public void onComplete(Object response) {
-                        TextView textView = findViewById(R.id.textView);
-                        textView.setText(response.toString());
-                        task++;
-                    }
-                });
+                //to see a string representation of the plan currently in this activity
+                /*TextView textView = findViewById(R.id.textView);
+                textView.setText(plan.toString());*/
             }
         });
     }
 
     private static class SetupTask extends AsyncTask<Void, Void, Exception> {
-        WeakReference<GetRequestActivity> activityReference;
-        SetupTask(GetRequestActivity activity) {
+        WeakReference<DisassemblyActivity> activityReference;
+        SetupTask(DisassemblyActivity activity) {
             this.activityReference = new WeakReference<>(activity);
         }
         @Override
@@ -111,7 +106,7 @@ public class GetRequestActivity extends AppCompatActivity implements Recognition
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Recognizer initialization is a time-consuming and it involves IO,
                 // so we execute it in async task
-                new GetRequestActivity.SetupTask(this).execute();
+                new DisassemblyActivity.SetupTask(this).execute();
             } else {
                 finish();
             }
@@ -150,15 +145,7 @@ public class GetRequestActivity extends AppCompatActivity implements Recognition
     @Override
     public void onResult(Hypothesis hypothesis) {
         if (hypothesis != null) {
-            TaskService.getTaskDescription(MODEL, task, LOCALE, new TaskService.Listener() {
-                @Override
-                public void onComplete(Object response) {
-                    TextView textView = findViewById(R.id.textView);
-                    textView.setText(response.toString());
-                    recognizer.startListening(KWS_SEARCH);
-                    task++;
-                }
-            });
+
         }
     }
 

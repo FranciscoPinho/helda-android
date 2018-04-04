@@ -7,23 +7,17 @@ import com.organon.helda.core.gateways.PlanGateway;
 
 
 public class InMemoryPlanGateway implements PlanGateway{
-    private static final String MODEL = "1PW2A4LKNQ78FKD0";
-    private static final String LOCALE = "es";
-    private static final Task[] TASKS = {
-            new Task("Llevar clip a caja x y la junta a mueble kanban", 0),
-            new Task("Quitar insono elemento portador izquierdo", 0),
-            new Task("Llevar 2 clips a la caja 5 en mueble Kanban", 0),
-    };
+
     Plan plan;
 
-    public InMemoryPlanGateway(){
-        plan=new Plan(MODEL,LOCALE);
-        for(Task task:TASKS)plan.addTask(task);
+    public InMemoryPlanGateway(Plan plan){
+       this.plan=plan;
     }
 
     @Override
     public Plan getPlan(String model,String locale){
-        return plan;
+        if(plan.getModel().equals(model) && plan.getLocale().equals(locale))
+            return plan;
+        else return null;
     }
-
 }

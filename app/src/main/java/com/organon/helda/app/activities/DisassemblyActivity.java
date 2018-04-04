@@ -64,8 +64,8 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         button.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 //to see a string representation of the plan currently in this activity
-                /*TextView textView = findViewById(R.id.textView);
-                textView.setText(plan.toString());*/
+                TextView textView = findViewById(R.id.textView);
+                textView.setText(plan.toString());
             }
         });
     }

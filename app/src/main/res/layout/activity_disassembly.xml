@@ -11,9 +11,10 @@
         android:id="@+id/listoButton"
         android:layout_width="149dp"
         android:layout_height="50dp"
-        android:layout_marginBottom="148dp"
-        android:layout_marginStart="32dp"
+        android:layout_marginBottom="152dp"
+        android:layout_marginStart="36dp"
         android:backgroundTint="@android:color/holo_green_dark"
+        android:text="@string/testButton"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="Listo" />
@@ -22,8 +23,8 @@
         android:id="@+id/anomaliaButton"
         android:layout_width="149dp"
         android:layout_height="50dp"
-        android:layout_marginBottom="96dp"
-        android:layout_marginStart="32dp"
+        android:layout_marginBottom="100dp"
+        android:layout_marginStart="36dp"
         android:backgroundTint="@android:color/holo_red_dark"
         android:text="@string/anomalia"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -33,26 +34,26 @@
         android:id="@+id/paradaButton"
         android:layout_width="149dp"
         android:layout_height="50dp"
-        android:layout_marginBottom="96dp"
+        android:layout_marginBottom="100dp"
         android:backgroundTint="@android:color/holo_blue_dark"
         android:text="@string/parada"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.834"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.14"
+        app:layout_constraintStart_toEndOf="@+id/anomaliaButton"
         tools:text="Parada" />
 
     <Button
         android:id="@+id/atrasButton"
         android:layout_width="149dp"
         android:layout_height="50dp"
-        android:layout_marginBottom="148dp"
+        android:layout_marginBottom="152dp"
         android:backgroundTint="?android:attr/colorPressedHighlight"
         android:text="@string/atrás"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.834"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.14"
+        app:layout_constraintStart_toEndOf="@+id/listoButton"
         tools:text="Atrás" />
 
     <TextView
@@ -71,7 +72,7 @@
         android:textSize="20sp"
         android:typeface="normal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.2"
+        app:layout_constraintHorizontal_bias="0.04"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -88,27 +89,26 @@
         android:layout_height="113dp"
         android:layout_marginEnd="2dp"
         android:layout_marginStart="17dp"
-        android:layout_marginTop="13dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/paradaButton"
+        app:layout_constraintHorizontal_bias="0.537"
         app:layout_constraintStart_toEndOf="@+id/anomaliaButton"
-        app:layout_constraintTop_toBottomOf="@+id/paradaButton"
+        app:layout_constraintTop_toBottomOf="@+id/taskViewer"
+        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/peugeot_logo" />
 
     <TextView
         android:id="@+id/OperarioView"
         android:layout_width="295dp"
         android:layout_height="80dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginEnd="37dp"
-        android:layout_marginStart="37dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginBottom="29dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="35dp"
         android:background="@android:color/background_dark"
         android:backgroundTint="@android:color/background_dark"
         app:layout_constraintBottom_toTopOf="@+id/taskViewer"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/guideline"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.53" />
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

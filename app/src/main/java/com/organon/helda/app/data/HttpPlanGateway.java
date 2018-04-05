@@ -17,15 +17,14 @@ import java.util.List;
 import java.util.Map;
 
 public class HttpPlanGateway implements PlanGateway {
-    private static final String BASE = "https://helda-server.herokuapp.com/";
-
+    //private static final String BASE = "https://helda-server.herokuapp.com/";
+    private static final String BASE = "http://www.mocky.io/v2/5ac622c14a00005b007e0670";
     private static String GET_PLAN = "plans/%s";
 
     @Override
     public Plan getPlan(String model, String locale) {
         StringBuilder url = new StringBuilder(BASE);
-        url.append(String.format(GET_PLAN, model));
-
+        //url.append(String.format(GET_PLAN, model));
         Map<String, String> params = new HashMap<>();
         params.put("locale", locale);
 
@@ -45,7 +44,7 @@ public class HttpPlanGateway implements PlanGateway {
 
     public List<Task> parseListTasks(JSONArray tasks){
         Gson gson = new Gson();
-        Type type = new TypeToken<List<Task>>(){}.getType();
+        Type type = new TypeToken<List<Task>>() {}.getType();
         return gson.fromJson(tasks.toString(), type);
     }
 }

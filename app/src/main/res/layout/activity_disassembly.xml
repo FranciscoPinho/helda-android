@@ -107,6 +107,10 @@
         android:layout_marginTop="35dp"
         android:background="@android:color/background_dark"
         android:backgroundTint="@android:color/background_dark"
+        android:fontFamily="monospace"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textSize="20sp"
+        android:typeface="normal"
         app:layout_constraintBottom_toTopOf="@+id/taskViewer"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toTopOf="parent" />

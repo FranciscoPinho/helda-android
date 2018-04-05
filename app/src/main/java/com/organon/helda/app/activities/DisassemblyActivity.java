@@ -12,6 +12,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -69,7 +71,8 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         new DisassemblyActivity.SetupTask(this).execute();
 
         TextView operarioViewer = findViewById(R.id.OperarioView);
-        operarioViewer.setText(plan.getModel().toString());
+        operarioViewer.setText("Model: " + plan.getModel().toString());
+        operarioViewer.setGravity(Gravity.CENTER);
         TextView taskViewer = findViewById(R.id.taskViewer);
         taskViewer.addTextChangedListener(new TextWatcher() {
 
@@ -85,12 +88,14 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 repeatTTS.speak(plan.getTask(task).toString(), TextToSpeech.QUEUE_FLUSH, null);
             }
         });
+        final TextView textView = findViewById(R.id.taskViewer);
+        textView.setGravity(Gravity.CENTER);
 
         Button button = findViewById(R.id.listoButton);
         button.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 //to see a string representation of the plan currently in this activity
-                TextView textView = findViewById(R.id.taskViewer);
+
                 task++;
                 String planStr = plan.getTask(task).toString();
                 textView.setText(planStr);

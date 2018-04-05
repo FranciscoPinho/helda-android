@@ -2,12 +2,18 @@ package com.organon.helda.app.activities;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -18,6 +24,7 @@ import com.organon.helda.app.data.NetworkManager;
 import com.organon.helda.core.entities.Plan;
 
 import java.io.File;
+import java.util.Locale;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
@@ -27,7 +34,7 @@ import edu.cmu.pocketsphinx.RecognitionListener;
 import edu.cmu.pocketsphinx.SpeechRecognizer;
 import edu.cmu.pocketsphinx.SpeechRecognizerSetup;
 
-public class DisassemblyActivity extends AppCompatActivity implements RecognitionListener {
+public class DisassemblyActivity extends AppCompatActivity implements RecognitionListener, TextToSpeech.OnInitListener {
 
     /* Named searches allow to quickly reconfigure the decoder */
     private static final String KWS_SEARCH = "listo";
@@ -40,6 +47,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
     private static int task = 0;
 
     private Plan plan;
+    private TextToSpeech repeatTTS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +55,8 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         setContentView(R.layout.activity_disassembly);
 
         plan=(Plan)getIntent().getSerializableExtra("currentPlan");
+        repeatTTS = new TextToSpeech(this, this);
+        repeatTTS.setLanguage(new Locale("es", "ES"));
         // Super important, this must be called on application startup
         NetworkManager.getInstance(this);
 
@@ -60,14 +70,45 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         // so we execute it in async task
         new DisassemblyActivity.SetupTask(this).execute();
 
-        Button button = findViewById(R.id.button1);
+        TextView operarioViewer = findViewById(R.id.OperarioView);
+        operarioViewer.setText("Model: " + plan.getModel().toString());
+        operarioViewer.setGravity(Gravity.CENTER);
+        TextView taskViewer = findViewById(R.id.taskViewer);
+        taskViewer.addTextChangedListener(new TextWatcher() {
+
+            public void afterTextChanged(Editable s) {}
+
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {}
+
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+                if(repeatTTS.isSpeaking())
+                    repeatTTS.stop();
+                repeatTTS.speak(plan.getTask(task).toString(), TextToSpeech.QUEUE_FLUSH, null);
+            }
+        });
+        final TextView textView = findViewById(R.id.taskViewer);
+        textView.setGravity(Gravity.CENTER);
+
+        Button button = findViewById(R.id.listoButton);
         button.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 //to see a string representation of the plan currently in this activity
-                TextView textView = findViewById(R.id.textView);
-                textView.setText(plan.toString());
+
+                task++;
+                String planStr = plan.getTask(task).toString();
+                textView.setText(planStr);
+
             }
         });
+    }
+
+    @Override
+    public void onInit(int i) {
+        TextView taskviewer = findViewById(R.id.taskViewer);
+        taskviewer.setText(plan.getTask(task).toString());
+        repeatTTS.speak(plan.getTask(task).toString(), TextToSpeech.QUEUE_FLUSH, null);
     }
 
     private static class SetupTask extends AsyncTask<Void, Void, Exception> {
@@ -89,7 +130,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         @Override
         protected void onPostExecute(Exception result) {
             if (result != null) {
-                ((TextView) activityReference.get().findViewById(R.id.textView))
+                ((TextView) activityReference.get().findViewById(R.id.taskViewer))
                         .setText("Failed to init recognizer " + result);
             } else {
                 activityReference.get().recognizer.startListening(KWS_SEARCH);
@@ -116,7 +157,9 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
     @Override
     public void onDestroy() {
         super.onDestroy();
-
+        if(repeatTTS != null) {
+            repeatTTS.shutdown();
+        }
         if (recognizer != null) {
             recognizer.cancel();
             recognizer.shutdown();

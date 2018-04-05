@@ -4,31 +4,115 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:backgroundTint="@android:color/darker_gray"
     tools:context=".app.activities.DisassemblyActivity">
 
     <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="100dp"
+        android:id="@+id/listoButton"
+        android:layout_width="149dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="152dp"
+        android:layout_marginStart="31dp"
+        android:backgroundTint="@android:color/holo_green_dark"
         android:text="@string/testButton"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        tools:text="Listo" />
+
+    <Button
+        android:id="@+id/anomaliaButton"
+        android:layout_width="149dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="100dp"
+        android:layout_marginStart="31dp"
+        android:backgroundTint="@android:color/holo_red_dark"
+        android:text="@string/anomalia"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/paradaButton"
+        android:layout_width="149dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="100dp"
+        android:backgroundTint="@android:color/holo_blue_dark"
+        android:text="@string/parada"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.14"
+        app:layout_constraintStart_toEndOf="@+id/anomaliaButton"
+        tools:text="Parada" />
+
+    <Button
+        android:id="@+id/atrasButton"
+        android:layout_width="149dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="152dp"
+        android:backgroundTint="?android:attr/colorPressedHighlight"
+        android:text="@string/atrás"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.14"
+        app:layout_constraintStart_toEndOf="@+id/listoButton"
+        tools:text="Atrás" />
 
     <TextView
-        android:id="@+id/textView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="209dp"
+        android:id="@+id/taskViewer"
+        android:layout_width="295dp"
+        android:layout_height="152dp"
         android:layout_marginEnd="37dp"
-        android:layout_marginStart="37dp"
-        android:layout_marginTop="72dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="144dp"
+        android:background="@android:color/background_dark"
+        android:backgroundTint="@android:color/background_dark"
+        android:fontFamily="monospace"
         android:text="@string/testText"
-        app:layout_constraintBottom_toTopOf="@+id/button1"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textSize="20sp"
+        android:typeface="normal"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="1dp" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="96dp"
+        android:layout_height="113dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/paradaButton"
+        app:layout_constraintHorizontal_bias="0.485"
+        app:layout_constraintStart_toEndOf="@+id/anomaliaButton"
+        app:layout_constraintTop_toBottomOf="@+id/taskViewer"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/peugeot_logo" />
+
+    <TextView
+        android:id="@+id/OperarioView"
+        android:layout_width="295dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="29dp"
+        android:layout_marginStart="31dp"
+        android:layout_marginTop="35dp"
+        android:background="@android:color/background_dark"
+        android:backgroundTint="@android:color/background_dark"
+        android:fontFamily="monospace"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:typeface="normal"
+        app:layout_constraintBottom_toTopOf="@+id/taskViewer"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
 </android.support.constraint.ConstraintLayout>

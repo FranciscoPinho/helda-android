@@ -6,4 +6,7 @@
     <string name="testButton">listo</string>
     <string name="testText">Awaiting task</string>
     <string name="title_activity_barcode_reader">BarcodeReaderActivity</string>
+    <string name="anomalia">Anomalia</string>
+    <string name="parada">Parada</string>
+    <string name="atrás">atrás</string>
 </resources>

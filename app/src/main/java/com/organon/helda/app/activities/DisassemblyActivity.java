@@ -1,8 +1,8 @@
 package com.organon.helda.app.activities;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
@@ -84,7 +84,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
             }
         });
 
-        Button button = findViewById(R.id.button1);
+        Button button = findViewById(R.id.listoButton);
         button.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 //to see a string representation of the plan currently in this activity

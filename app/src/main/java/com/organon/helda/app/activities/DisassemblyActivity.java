@@ -1,9 +1,11 @@
 package com.organon.helda.app.activities;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -18,6 +20,7 @@ import com.organon.helda.app.data.NetworkManager;
 import com.organon.helda.core.entities.Plan;
 
 import java.io.File;
+import java.util.Locale;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
@@ -27,7 +30,7 @@ import edu.cmu.pocketsphinx.RecognitionListener;
 import edu.cmu.pocketsphinx.SpeechRecognizer;
 import edu.cmu.pocketsphinx.SpeechRecognizerSetup;
 
-public class DisassemblyActivity extends AppCompatActivity implements RecognitionListener {
+public class DisassemblyActivity extends AppCompatActivity implements RecognitionListener, TextToSpeech.OnInitListener {
 
     /* Named searches allow to quickly reconfigure the decoder */
     private static final String KWS_SEARCH = "listo";
@@ -40,6 +43,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
     private static int task = 0;
 
     private Plan plan;
+    private TextToSpeech repeatTTS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,15 +63,26 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         // Recognizer initialization is a time-consuming and it involves IO,
         // so we execute it in async task
         new DisassemblyActivity.SetupTask(this).execute();
+        repeatTTS = new TextToSpeech(this, this);
+
 
         Button button = findViewById(R.id.button1);
         button.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 //to see a string representation of the plan currently in this activity
                 TextView textView = findViewById(R.id.textView);
-                textView.setText(plan.toString());
+                String planStr = plan.toString();
+                textView.setText(planStr);
+                repeatTTS.setLanguage(new Locale("es", "ES"));
+                repeatTTS.speak(planStr, TextToSpeech.QUEUE_FLUSH, null);
+
             }
         });
+    }
+
+    @Override
+    public void onInit(int i) {
+
     }
 
     private static class SetupTask extends AsyncTask<Void, Void, Exception> {

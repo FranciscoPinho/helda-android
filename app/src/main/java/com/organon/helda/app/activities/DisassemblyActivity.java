@@ -1,6 +1,7 @@
 package com.organon.helda.app.activities;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -52,6 +53,8 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         setContentView(R.layout.activity_disassembly);
 
         plan=(Plan)getIntent().getSerializableExtra("currentPlan");
+        repeatTTS = new TextToSpeech(this, this);
+        repeatTTS.setLanguage(new Locale("es", "ES"));
         // Super important, this must be called on application startup
         NetworkManager.getInstance(this);
 
@@ -64,10 +67,22 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         // Recognizer initialization is a time-consuming and it involves IO,
         // so we execute it in async task
         new DisassemblyActivity.SetupTask(this).execute();
-        repeatTTS = new TextToSpeech(this, this);
-        repeatTTS.setLanguage(new Locale("es", "ES"));
 
         TextView taskViewer = findViewById(R.id.taskViewer);
+        taskViewer.addTextChangedListener(new TextWatcher() {
+
+            public void afterTextChanged(Editable s) {}
+
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {}
+
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+                if(repeatTTS.isSpeaking())
+                    repeatTTS.stop();
+                repeatTTS.speak(plan.getTask(task).toString(), TextToSpeech.QUEUE_FLUSH, null);
+            }
+        });
 
         Button button = findViewById(R.id.button1);
         button.setOnClickListener(new OnClickListener() {
@@ -77,7 +92,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 task++;
                 String planStr = plan.getTask(task).toString();
                 textView.setText(planStr);
-                repeatTTS.speak(planStr, TextToSpeech.QUEUE_FLUSH, null);
+
             }
         });
     }
@@ -135,7 +150,9 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
     @Override
     public void onDestroy() {
         super.onDestroy();
-
+        if(repeatTTS != null) {
+            repeatTTS.shutdown();
+        }
         if (recognizer != null) {
             recognizer.cancel();
             recognizer.shutdown();

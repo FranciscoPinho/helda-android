@@ -68,6 +68,8 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         // so we execute it in async task
         new DisassemblyActivity.SetupTask(this).execute();
 
+        TextView operarioViewer = findViewById(R.id.OperarioView);
+        operarioViewer.setText(plan.getModel().toString());
         TextView taskViewer = findViewById(R.id.taskViewer);
         taskViewer.addTextChangedListener(new TextWatcher() {
 

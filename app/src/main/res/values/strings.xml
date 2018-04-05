@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="app_name">Helda Prototype</string>
+    <string name="app_name">Helpful Disassembly Assistant</string>
     <string name="kws_caption">To start demonstration say \"listo\".</string>
     <string name="helda_caption">Good job! Say \"volver\" to go back</string>
     <string name="testButton">listo</string>
     <string name="testText">Awaiting task</string>
+    <string name="title_activity_barcode_reader">BarcodeReaderActivity</string>
 </resources>

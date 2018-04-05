@@ -1,7 +1,6 @@
 package com.organon.helda.app.activities;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,6 +9,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -64,25 +65,28 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         // so we execute it in async task
         new DisassemblyActivity.SetupTask(this).execute();
         repeatTTS = new TextToSpeech(this, this);
+        repeatTTS.setLanguage(new Locale("es", "ES"));
 
+        TextView taskViewer = findViewById(R.id.taskViewer);
 
         Button button = findViewById(R.id.button1);
         button.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 //to see a string representation of the plan currently in this activity
-                TextView textView = findViewById(R.id.textView);
-                String planStr = plan.toString();
+                TextView textView = findViewById(R.id.taskViewer);
+                task++;
+                String planStr = plan.getTask(task).toString();
                 textView.setText(planStr);
-                repeatTTS.setLanguage(new Locale("es", "ES"));
                 repeatTTS.speak(planStr, TextToSpeech.QUEUE_FLUSH, null);
-
             }
         });
     }
 
     @Override
     public void onInit(int i) {
-
+        TextView taskviewer = findViewById(R.id.taskViewer);
+        taskviewer.setText(plan.getTask(task).toString());
+        repeatTTS.speak(plan.getTask(task).toString(), TextToSpeech.QUEUE_FLUSH, null);
     }
 
     private static class SetupTask extends AsyncTask<Void, Void, Exception> {
@@ -104,7 +108,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         @Override
         protected void onPostExecute(Exception result) {
             if (result != null) {
-                ((TextView) activityReference.get().findViewById(R.id.textView))
+                ((TextView) activityReference.get().findViewById(R.id.taskViewer))
                         .setText("Failed to init recognizer " + result);
             } else {
                 activityReference.get().recognizer.startListening(KWS_SEARCH);

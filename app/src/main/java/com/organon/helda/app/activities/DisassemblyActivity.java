@@ -192,7 +192,6 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
             hypothesis = null;
             if (text.equals(KWS_SEARCH)) {
                 TextView textView = findViewById(R.id.taskViewer);
-                textView.setGravity(Gravity.CENTER);
                 task++;
                 String planStr = plan.getTask(task).toString();
                 textView.setText(planStr);

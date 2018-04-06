@@ -1,30 +1,20 @@
 package com.organon.helda.app.data;
 
 import android.content.Context;
-import android.os.AsyncTask;
-import android.support.annotation.NonNull;
-import android.util.Log;
-
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.Volley;
-import com.organon.helda.core.entities.Task;
-
 import org.json.JSONObject;
-
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class NetworkManager
 {
-    private static final String TAG = "NetworkManager";
     private static NetworkManager instance = null;
 
     //for Volley API
-    public RequestQueue requestQueue;
+    private RequestQueue requestQueue;
 
     private NetworkManager(Context context)
     {
@@ -47,10 +37,10 @@ public class NetworkManager
         return instance;
     }
 
-    public JSONObject getSync(String url, Map<String, String> params) {
+    public JSONObject getSync(String url, Map<String, String> params,int type) {
         url = buildUrl(url, params);
         RequestFuture<JSONObject> future = RequestFuture.newFuture();
-        JsonObjectRequest request = new JsonObjectRequest(url, new JSONObject(), future, future);
+        JsonObjectRequest request = new JsonObjectRequest(type,url, null, future, future);
         requestQueue.add(request);
         try {
             return future.get(10, TimeUnit.SECONDS);

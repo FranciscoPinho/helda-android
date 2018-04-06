@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -34,7 +35,7 @@ public class BarcodeReaderActivity extends AppCompatActivity {
 
     private static final String MODEL = "1PW2A4LKNQ78FKD0";
     private static final String LOCALE = "es";
-    public static final int CAMERA_REQUEST = 2;
+    public static final int PERMISSIONS_CAMERA_REQUEST = 2;
     BarcodeDetector detector;
     CameraSource cameraSource;
     SurfaceView cameraView;
@@ -57,6 +58,27 @@ public class BarcodeReaderActivity extends AppCompatActivity {
         scanBarcode();
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions, @NonNull  int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSIONS_CAMERA_REQUEST) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                try {
+                    cameraSource.start(cameraView.getHolder());
+                }
+                catch(SecurityException e){
+                    e.printStackTrace();
+                }
+                catch(IOException e){
+                    e.printStackTrace();
+                }
+            } else {
+                finish();
+            }
+        }
+    }
+
     private void scanBarcode() {
         cameraView.setZOrderMediaOverlay(true);
         cameraSource = new CameraSource.Builder(BarcodeReaderActivity.this, detector)
@@ -72,7 +94,7 @@ public class BarcodeReaderActivity extends AppCompatActivity {
                     if (ContextCompat.checkSelfPermission(BarcodeReaderActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                         cameraSource.start(cameraView.getHolder());
                     } else {
-                        ActivityCompat.requestPermissions(BarcodeReaderActivity.this, new String[]{Manifest.permission.CAMERA},CAMERA_REQUEST);
+                        ActivityCompat.requestPermissions(BarcodeReaderActivity.this, new String[]{Manifest.permission.CAMERA},PERMISSIONS_CAMERA_REQUEST);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

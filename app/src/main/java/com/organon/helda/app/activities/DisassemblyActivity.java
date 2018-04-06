@@ -2,7 +2,6 @@ package com.organon.helda.app.activities;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
@@ -12,7 +11,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -37,7 +35,9 @@ import edu.cmu.pocketsphinx.SpeechRecognizerSetup;
 public class DisassemblyActivity extends AppCompatActivity implements RecognitionListener, TextToSpeech.OnInitListener {
 
     /* Named searches allow to quickly reconfigure the decoder */
-    private static final String KWS_SEARCH = "listo";
+    private static final String KWS_SEARCH = "keywords";
+    private static final String KWS_NEXT = "listo";
+    private static final String KWS_REVERT = "volver";
 
     /* Used to handle permission request */
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
@@ -73,7 +73,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         TextView operarioViewer = findViewById(R.id.OperarioView);
         operarioViewer.setText("Model: " + plan.getModel().toString());
         operarioViewer.setGravity(Gravity.CENTER);
-        TextView taskViewer = findViewById(R.id.taskViewer);
+        final TextView taskViewer = findViewById(R.id.taskViewer);
         taskViewer.addTextChangedListener(new TextWatcher() {
 
             public void afterTextChanged(Editable s) {}
@@ -88,18 +88,28 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 repeatTTS.speak(plan.getTask(task).toString(), TextToSpeech.QUEUE_FLUSH, null);
             }
         });
-        final TextView textView = findViewById(R.id.taskViewer);
-        textView.setGravity(Gravity.CENTER);
 
-        Button button = findViewById(R.id.listoButton);
-        button.setOnClickListener(new OnClickListener() {
+        taskViewer.setGravity(Gravity.CENTER);
+
+        Button listoButton = findViewById(R.id.listoButton);
+        listoButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 //to see a string representation of the plan currently in this activity
 
                 task++;
                 String planStr = plan.getTask(task).toString();
-                textView.setText(planStr);
+                taskViewer.setText(planStr);
 
+            }
+        });
+        Button atrasButton = findViewById(R.id.atrasButton);
+        atrasButton.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                if (task != 0) {
+                    task--;
+                }
+                String planStr = plan.getTask(task).toString();
+                taskViewer.setText(planStr);
             }
         });
     }
@@ -176,10 +186,27 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         if (hypothesis == null)
             return;
 
+        TextView textView;
+        String planStr;
         String text = hypothesis.getHypstr();
-        if (text.equals(KWS_SEARCH)){
-            recognizer.stop();
+        switch (text) {
+            case KWS_NEXT:
+                textView = findViewById(R.id.taskViewer);
+                task++;
+                planStr = plan.getTask(task).toString();
+                textView.setText(planStr);
+                break;
+            case KWS_REVERT:
+                textView = findViewById(R.id.taskViewer);
+                if (task != 0) {
+                    task--;
+                }
+                planStr = plan.getTask(task).toString();
+                textView.setText(planStr);
+                break;
         }
+
+        recognizer.stop();
     }
 
     /**
@@ -187,18 +214,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
      */
     @Override
     public void onResult(Hypothesis hypothesis) {
-        if (hypothesis != null) {
-            String text = hypothesis.getHypstr();
-            hypothesis = null;
-            if (text.equals(KWS_SEARCH)) {
-                TextView textView = findViewById(R.id.taskViewer);
-                task++;
-                String planStr = plan.getTask(task).toString();
-                textView.setText(planStr);
-            }
-            recognizer.startListening(KWS_SEARCH);
-
-        }
+        recognizer.startListening(KWS_SEARCH);
     }
 
     @Override
@@ -227,7 +243,9 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
          */
 
         // Create keyword-activation search.
-        recognizer.addKeyphraseSearch(KWS_SEARCH, KWS_SEARCH);
+
+        File keywordsGrammar = new File(assetsDir, "keywords.gram");
+        recognizer.addKeywordSearch(KWS_SEARCH, keywordsGrammar);
     }
 
     @Override

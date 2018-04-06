@@ -188,6 +188,15 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
     @Override
     public void onResult(Hypothesis hypothesis) {
         if (hypothesis != null) {
+            String text = hypothesis.getHypstr();
+            hypothesis = null;
+            if (text.equals(KWS_SEARCH)) {
+                TextView textView = findViewById(R.id.taskViewer);
+                task++;
+                String planStr = plan.getTask(task).toString();
+                textView.setText(planStr);
+            }
+            recognizer.startListening(KWS_SEARCH);
 
         }
     }

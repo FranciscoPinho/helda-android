@@ -2,7 +2,9 @@ package com.organon.helda.app.data;
 import java.lang.reflect.Type;
 import android.os.AsyncTask;
 
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
+import com.android.volley.ServerError;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.organon.helda.core.entities.Plan;
@@ -30,17 +32,20 @@ public class HttpPlanGateway implements PlanGateway {
         params.put("locale", locale);
 
         NetworkManager networkManager = NetworkManager.getInstance();
-        JSONObject res = networkManager.getSync(url.toString(), params, Request.Method.GET);
+        JSONObject res = null;
+        res = networkManager.getSync(url.toString(), params, Request.Method.GET);
+        if(res==null)
+            return null;
 
         try {
+
             if(res.has("error")) {
                 boolean error = res.getBoolean("error");
                 if (error) return null;
             }
             return new Plan(res.getString("model"),locale, parseListTasks(res.getJSONArray("tasks")));
-        } catch (JSONException e) {
-            // Convert the checked exception to an unchecked one
-            // @Todo: Probably throw some custom exception
+        }
+        catch (JSONException e) {
             throw new RuntimeException(e.getMessage());
         }
     }

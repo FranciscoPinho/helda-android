@@ -1,7 +1,10 @@
 package com.organon.helda.app.activities;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,6 +15,7 @@ import android.util.SparseArray;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
@@ -20,6 +24,7 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.organon.helda.app.data.HttpPlanGateway;
 import com.organon.helda.app.data.NetworkManager;
 import com.organon.helda.app.services.PlanService;
+import com.organon.helda.app.utils.Utils;
 import com.organon.helda.core.entities.Plan;
 import com.organon.helda.R;
 
@@ -30,10 +35,13 @@ public class BarcodeReaderActivity extends AppCompatActivity {
 
     public static final int PERMISSIONS_CAMERA_REQUEST = 2;
     BarcodeDetector detector;
+    BroadcastReceiver connectivity_receiver;
     CameraSource cameraSource;
     SurfaceView cameraView;
     SurfaceHolder cameraHolder;
     String detectedBarcodes;
+    Boolean connectivity;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +49,16 @@ public class BarcodeReaderActivity extends AppCompatActivity {
         setContentView(R.layout.activity_barcode_reader);
         NetworkManager.getInstance(this);
         TextView txtView = findViewById(R.id.textView);
+        connectivity= Utils.isNetworkAvailable(this);
+        System.out.println("Connectivity :"+connectivity);
+        connectivity_receiver= new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                connectivity=Utils.isNetworkAvailable(context);
+            }
+        };
+        registerReceiver(connectivity_receiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
+
         detector = new BarcodeDetector.Builder(getApplicationContext()).build();
         if(!detector.isOperational()){
             txtView.setText("Could not set up the detector!");
@@ -49,6 +67,12 @@ public class BarcodeReaderActivity extends AppCompatActivity {
         cameraView = findViewById(R.id.cameraSurface);
         cameraHolder = cameraView.getHolder();
         scanBarcode();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(connectivity_receiver);
     }
 
     @Override
@@ -119,23 +143,44 @@ public class BarcodeReaderActivity extends AppCompatActivity {
                            detectedBarcodes = "Barcode "+i+": "+barcodes.valueAt(i).rawValue+"\n";
                         }
 
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                TextView textView = findViewById(R.id.textView);
-                                textView.setText(detectedBarcodes);
-                                cameraSource.stop();
-                            }
-                        });
+                        if(connectivity) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    cameraSource.stop();
+                                    TextView textView = findViewById(R.id.textView);
+                                    textView.setText(detectedBarcodes);
+                                }
+                            });
+                            PlanService.getPlan("TESTE", "es", new HttpPlanGateway(), new PlanService.Listener() {
+                                @Override
+                                public void onComplete(Object response) {
+                                    if (response == null) {
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                try {
+                                                    cameraSource.start(cameraView.getHolder());
+                                                }
+                                                catch(SecurityException e){
+                                                    e.printStackTrace();
+                                                }
+                                                catch(IOException e){
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        });
+                                        return;
+                                    }
+                                    Intent intent = new Intent(BarcodeReaderActivity.this, DisassemblyActivity.class);
+                                    intent.putExtra("currentPlan", (Plan) response);
+                                    startActivity(intent);
+                                }
+                            });
 
-                        PlanService.getPlan("TESTE", "es", new HttpPlanGateway(), new PlanService.Listener() {
-                            @Override
-                            public void onComplete(Object response) {
-                                Intent intent = new Intent(BarcodeReaderActivity.this, DisassemblyActivity.class);
-                                intent.putExtra("currentPlan", (Plan) response);
-                                startActivity(intent);
-                            }
-                        });
+                        }
+                        else Toast.makeText(BarcodeReaderActivity.this, R.string.noConnection, Toast.LENGTH_SHORT).show();
+
                 }
             }
         });

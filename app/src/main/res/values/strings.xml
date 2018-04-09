@@ -9,4 +9,5 @@
     <string name="anomalia">Anomalia</string>
     <string name="parada">Parada</string>
     <string name="atrás">atrás</string>
+    <string name="noConnection">Por favor, compruebe la conexión y vuelva a intentarlo</string>
 </resources>

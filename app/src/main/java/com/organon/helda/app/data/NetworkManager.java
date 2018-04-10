@@ -1,7 +1,13 @@
 package com.organon.helda.app.data;
 
 import android.content.Context;
+import android.widget.Toast;
+
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NoConnectionError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.ServerError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.Volley;
@@ -37,17 +43,22 @@ public class NetworkManager
         return instance;
     }
 
-    public JSONObject getSync(String url, Map<String, String> params,int type) {
+    public RequestQueue getRequestQueue(){
+        return requestQueue;
+    }
+
+
+    public JSONObject getSync(String url, Map<String, String> params,int type){
         url = buildUrl(url, params);
         RequestFuture<JSONObject> future = RequestFuture.newFuture();
         JsonObjectRequest request = new JsonObjectRequest(type,url, null, future, future);
         requestQueue.add(request);
         try {
             return future.get(10, TimeUnit.SECONDS);
-        } catch (Exception e) {
-            // Converts the checked exception to an unchecked exception
-            // @Todo: Change the runtime exception to a custom exception probably ?
-            throw new RuntimeException(e.getMessage());
+        }
+
+        catch (Exception e) {
+            return null;
         }
     }
 

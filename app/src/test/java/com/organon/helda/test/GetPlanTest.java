@@ -11,9 +11,6 @@ import com.organon.helda.core.usecases.getplan.GetPlanResponseMessage;
 
 import org.junit.BeforeClass;
 
-/**
- * Created by marga on 3/2/2018.
- */
 public class GetPlanTest {
     private static final Context context = new Context();
     private static final String MODEL = "1PW2A4LKNQ78FKD0";

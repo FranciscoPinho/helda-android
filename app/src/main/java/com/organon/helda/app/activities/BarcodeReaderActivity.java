@@ -50,7 +50,6 @@ public class BarcodeReaderActivity extends AppCompatActivity {
         NetworkManager.getInstance(this);
         TextView txtView = findViewById(R.id.textView);
         connectivity= Utils.isNetworkAvailable(this);
-        System.out.println("Connectivity :"+connectivity);
         connectivity_receiver= new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -179,8 +178,12 @@ public class BarcodeReaderActivity extends AppCompatActivity {
                             });
 
                         }
-                        else Toast.makeText(BarcodeReaderActivity.this, R.string.noConnection, Toast.LENGTH_SHORT).show();
-
+                        else runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(BarcodeReaderActivity.this, R.string.noConnection, Toast.LENGTH_SHORT).show();
+                            }
+                        });
                 }
             }
         });

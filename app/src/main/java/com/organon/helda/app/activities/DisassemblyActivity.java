@@ -1,6 +1,7 @@
 package com.organon.helda.app.activities;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -22,9 +23,9 @@ import com.organon.helda.app.data.NetworkManager;
 import com.organon.helda.core.entities.Plan;
 
 import java.io.File;
-import java.util.Locale;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.Locale;
 
 import edu.cmu.pocketsphinx.Assets;
 import edu.cmu.pocketsphinx.Hypothesis;
@@ -73,7 +74,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         TextView operarioViewer = findViewById(R.id.OperarioView);
         operarioViewer.setText("Model: " + plan.getModel().toString());
         operarioViewer.setGravity(Gravity.CENTER);
-        final TextView taskViewer = findViewById(R.id.taskViewer);
+        final TextView taskViewer = findViewById(R.id.anomalyViewer);
         taskViewer.addTextChangedListener(new TextWatcher() {
 
             public void afterTextChanged(Editable s) {}
@@ -112,11 +113,19 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 taskViewer.setText(planStr);
             }
         });
+
+        Button anomaliaButton = findViewById(R.id.anomaliaButton);
+        anomaliaButton.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                Intent anomalyActivity = new Intent(DisassemblyActivity.this, AnomalyActivity.class);
+                startActivity(anomalyActivity);
+            }
+        });
     }
 
     @Override
     public void onInit(int i) {
-        TextView taskviewer = findViewById(R.id.taskViewer);
+        TextView taskviewer = findViewById(R.id.anomalyViewer);
         taskviewer.setText(plan.getTask(task).toString());
         repeatTTS.speak(plan.getTask(task).toString(), TextToSpeech.QUEUE_FLUSH, null);
     }
@@ -140,7 +149,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         @Override
         protected void onPostExecute(Exception result) {
             if (result != null) {
-                ((TextView) activityReference.get().findViewById(R.id.taskViewer))
+                ((TextView) activityReference.get().findViewById(R.id.anomalyViewer))
                         .setText("Failed to init recognizer " + result);
             } else {
                 activityReference.get().recognizer.startListening(KWS_SEARCH);
@@ -191,13 +200,13 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         String text = hypothesis.getHypstr();
         switch (text) {
             case KWS_NEXT:
-                textView = findViewById(R.id.taskViewer);
+                textView = findViewById(R.id.anomalyViewer);
                 task++;
                 planStr = plan.getTask(task).toString();
                 textView.setText(planStr);
                 break;
             case KWS_REVERT:
-                textView = findViewById(R.id.taskViewer);
+                textView = findViewById(R.id.anomalyViewer);
                 if (task != 0) {
                     task--;
                 }

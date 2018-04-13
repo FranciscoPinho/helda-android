@@ -43,7 +43,7 @@ public class HttpPlanGateway implements PlanGateway {
                 boolean error = res.getBoolean("error");
                 if (error) return null;
             }
-            return new Plan(res.getString("model"),locale, parseListTasks(res.getJSONArray("tasks")));
+            return new Plan(res.getString("model"),locale, parseListTasks(res.getJSONArray("tasksA")));
         }
         catch (JSONException e) {
             throw new RuntimeException(e.getMessage());

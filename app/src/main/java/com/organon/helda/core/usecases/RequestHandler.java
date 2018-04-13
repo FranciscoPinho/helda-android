@@ -18,7 +18,7 @@ public abstract class RequestHandler<Request, Response> {
 
     public Response handle(Request request) {
         if (!isValid(request)) return onValidationError(request);
-        return onValid(request);
+            return onValid(request);
     }
 
     protected String getValidationError() {

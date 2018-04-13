@@ -27,7 +27,7 @@
         tools:ignore="MissingConstraints" />
 
     <Chronometer
-        android:id="@+id/pausechronometer"
+        android:id="@+id/pauseChronometer"
         android:layout_width="352dp"
         android:layout_height="100dp"
         android:layout_centerHorizontal="true"

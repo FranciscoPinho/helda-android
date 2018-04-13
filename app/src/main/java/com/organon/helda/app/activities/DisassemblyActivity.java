@@ -117,8 +117,11 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 task++;
                 String planStr = plan.getTask(task).toString();
 
-                //Stop, Reset and Start task chronometer
+                //Stop task chronometer
                 taskChronometer.stop();
+                //Task time in miliseconds
+                //int taskTimeMiliss = (int) (SystemClock.elapsedRealtime() - taskChronometer.getBase());
+                //Reset and Start chronometer for new task
                 taskChronometer.setBase(SystemClock.elapsedRealtime());
                 taskChronometer.start();
 
@@ -134,8 +137,11 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 }
                 String planStr = plan.getTask(task).toString();
 
-                //Stop, Reset and Start task chronometer
+                //Stop task chronometer
                 taskChronometer.stop();
+                //Task time in miliseconds
+                //int taskTimeMiliss = (int) (SystemClock.elapsedRealtime() - taskChronometer.getBase());
+                //Reset and Start chronometer for new task
                 taskChronometer.setBase(SystemClock.elapsedRealtime());
                 taskChronometer.start();
 
@@ -151,7 +157,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 Button backButton;
                 backButton = (Button) pauseDialog.findViewById(R.id.reanudarButton);
 
-                pauseChronometer = (Chronometer) findViewById(R.id.pausechronometer);
+                pauseChronometer = (Chronometer) pauseDialog.findViewById(R.id.pauseChronometer);
 
                 //Pause task Chronometer
                 pauseInitialTime = SystemClock.elapsedRealtime();
@@ -167,7 +173,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                         pauseChronometer.stop();
 
                         //Pause time in miliseconds
-                        int pauseTimeMiliss = (int) (SystemClock.elapsedRealtime() - pauseChronometer.getBase());
+                        //int pauseTimeMiliss = (int) (SystemClock.elapsedRealtime() - pauseChronometer.getBase());
 
                         taskChronometer.setBase(taskChronometer.getBase() + SystemClock.elapsedRealtime() - pauseInitialTime);
                         pauseInitialTime = 0;
@@ -266,6 +272,15 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 textView = findViewById(R.id.taskViewer);
                 task++;
                 planStr = plan.getTask(task).toString();
+
+                //Stop task chronometer
+                taskChronometer.stop();
+                //Task time in miliseconds
+                //int taskTimeMiliss = (int) (SystemClock.elapsedRealtime() - taskChronometer.getBase());
+                //Reset and Start chronometer for new task
+                taskChronometer.setBase(SystemClock.elapsedRealtime());
+                taskChronometer.start();
+
                 textView.setText(planStr);
                 break;
             case KWS_REVERT:
@@ -274,6 +289,15 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                     task--;
                 }
                 planStr = plan.getTask(task).toString();
+
+                //Stop task chronometer
+                taskChronometer.stop();
+                //Task time in miliseconds
+                //int taskTimeMiliss = (int) (SystemClock.elapsedRealtime() - taskChronometer.getBase());
+                //Reset and Start chronometer for new task
+                taskChronometer.setBase(SystemClock.elapsedRealtime());
+                taskChronometer.start();
+
                 textView.setText(planStr);
                 break;
         }

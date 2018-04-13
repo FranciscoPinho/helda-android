@@ -28,6 +28,11 @@
             android:label="@string/app_name"
             android:theme="@style/Theme.AppCompat">
         </activity>
+        <activity
+            android:name=".app.activities.AnomalyActivity"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.AppCompat">
+        </activity>
     </application>
 
 </manifest>

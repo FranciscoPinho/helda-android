@@ -1,6 +1,7 @@
 package com.organon.helda.app.activities;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -110,6 +111,15 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 }
                 String planStr = plan.getTask(task).toString();
                 taskViewer.setText(planStr);
+            }
+        });
+
+        Button anomaliaButton = findViewById(R.id.anomaliaButton);
+        anomaliaButton.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                repeatTTS.stop();
+                Intent anomalyActivity = new Intent(DisassemblyActivity.this, AnomalyActivity.class);
+                startActivity(anomalyActivity);
             }
         });
     }

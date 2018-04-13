@@ -21,7 +21,7 @@ import java.util.Map;
 
 public class HttpPlanGateway implements PlanGateway {
    // private static final String BASE = "https://helda-server.herokuapp.com/";
-    private static final String BASE = "http://192.168.1.65:4567/";
+    private static final String BASE = "http://172.30.17.170:4567/";
     private static String GET_PLAN = "plans/%s";
 
     @Override

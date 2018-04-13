@@ -171,6 +171,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
                         taskChronometer.setBase(taskChronometer.getBase() + SystemClock.elapsedRealtime() - pauseInitialTime);
                         pauseInitialTime = 0;
+                        taskChronometer.start();
 
 
                         pauseDialog.dismiss();

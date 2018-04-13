@@ -152,6 +152,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         paradaButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
 
+                recognizer.stop();
                 pauseDialog.setContentView(R.layout.activity_pause);
 
                 Button backButton;
@@ -179,6 +180,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                         pauseInitialTime = 0;
                         taskChronometer.start();
 
+                        recognizer.startListening(KWS_SEARCH);
 
                         pauseDialog.dismiss();
                     }

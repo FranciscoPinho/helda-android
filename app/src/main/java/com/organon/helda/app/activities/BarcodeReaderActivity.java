@@ -147,7 +147,7 @@ public class BarcodeReaderActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     TextView textView = findViewById(R.id.textView);
-                                    textView.setText("camera needs to be restarted to avoid instantaneous redetections of barcode\n"+detectedBarcodes);
+                                    textView.setText("camera needs to be restarted to avoid instantaneous redetections of barcode, wait...\n"+detectedBarcodes);
                                     cameraSource.stop();
 
                                 }

@@ -40,7 +40,7 @@ public class BarcodeReaderActivity extends AppCompatActivity {
     SurfaceView cameraView;
     SurfaceHolder cameraHolder;
     String detectedBarcodes;
-    Boolean connectivity;
+    Boolean connectivity, stopDetections;
 
 
     @Override
@@ -50,6 +50,7 @@ public class BarcodeReaderActivity extends AppCompatActivity {
         NetworkManager.getInstance(this);
         TextView txtView = findViewById(R.id.textView);
         connectivity= Utils.isNetworkAvailable(this);
+        stopDetections=false;
         connectivity_receiver= new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -146,9 +147,10 @@ public class BarcodeReaderActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    cameraSource.stop();
                                     TextView textView = findViewById(R.id.textView);
-                                    textView.setText(detectedBarcodes);
+                                    textView.setText("camera needs to be restarted to avoid instantaneous redetections of barcode\n"+detectedBarcodes);
+                                    cameraSource.stop();
+
                                 }
                             });
                             PlanService.getPlan("TESTE", "es", new HttpPlanGateway(), new PlanService.Listener() {
@@ -158,15 +160,15 @@ public class BarcodeReaderActivity extends AppCompatActivity {
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                try {
-                                                    cameraSource.start(cameraView.getHolder());
-                                                }
-                                                catch(SecurityException e){
-                                                    e.printStackTrace();
-                                                }
+                                               try {
+                                                   if (ContextCompat.checkSelfPermission(BarcodeReaderActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
+                                                       cameraSource.start(cameraView.getHolder());
+                                               }
                                                 catch(IOException e){
                                                     e.printStackTrace();
                                                 }
+                                                TextView textView = findViewById(R.id.textView);
+                                                textView.setText("detecciones activas de nuevo");
                                             }
                                         });
                                         return;

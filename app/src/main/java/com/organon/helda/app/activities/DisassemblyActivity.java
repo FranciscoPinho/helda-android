@@ -1,7 +1,11 @@
 package com.organon.helda.app.activities;
 
+import android.app.Dialog;
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.SystemClock;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
@@ -16,6 +20,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Chronometer;
 
 import com.organon.helda.R;
 import com.organon.helda.app.data.NetworkManager;
@@ -49,10 +54,23 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
     private Plan plan;
     private TextToSpeech repeatTTS;
 
+    //Used to create a pop window when pause button is clicked
+    private Dialog pauseDialog;
+
+    private Chronometer taskChronometer;
+    private Chronometer pauseChronometer;
+
+    //helps taskChronometer in pauses
+    private long pauseInitialTime = 0;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_disassembly);
+        pauseDialog = new Dialog(this);
+
+        taskChronometer = (Chronometer) findViewById(R.id.taskChronometer);
 
         plan=(Plan)getIntent().getSerializableExtra("currentPlan");
         repeatTTS = new TextToSpeech(this, this);
@@ -98,6 +116,12 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
                 task++;
                 String planStr = plan.getTask(task).toString();
+
+                //Stop, Reset and Start task chronometer
+                taskChronometer.stop();
+                taskChronometer.setBase(SystemClock.elapsedRealtime());
+                taskChronometer.start();
+
                 taskViewer.setText(planStr);
 
             }
@@ -109,7 +133,52 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                     task--;
                 }
                 String planStr = plan.getTask(task).toString();
+
+                //Stop, Reset and Start task chronometer
+                taskChronometer.stop();
+                taskChronometer.setBase(SystemClock.elapsedRealtime());
+                taskChronometer.start();
+
                 taskViewer.setText(planStr);
+            }
+        });
+        Button paradaButton = findViewById(R.id.paradaButton);
+        paradaButton.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+
+                pauseDialog.setContentView(R.layout.activity_pause);
+
+                Button backButton;
+                backButton = (Button) pauseDialog.findViewById(R.id.reanudarButton);
+
+                pauseChronometer = (Chronometer) findViewById(R.id.pausechronometer);
+
+                //Pause task Chronometer
+                pauseInitialTime = SystemClock.elapsedRealtime();
+                taskChronometer.stop();
+
+                //Reset and Start pause Chronometer
+                pauseChronometer.setBase(SystemClock.elapsedRealtime());
+                pauseChronometer.start();
+
+                backButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        pauseChronometer.stop();
+
+                        //Pause time in miliseconds
+                        int pauseTimeMiliss = (int) (SystemClock.elapsedRealtime() - pauseChronometer.getBase());
+
+                        taskChronometer.setBase(taskChronometer.getBase() + SystemClock.elapsedRealtime() - pauseInitialTime);
+                        pauseInitialTime = 0;
+
+
+                        pauseDialog.dismiss();
+                    }
+                });
+                pauseDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                pauseDialog.show();
+
             }
         });
     }
@@ -118,6 +187,8 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
     public void onInit(int i) {
         TextView taskviewer = findViewById(R.id.taskViewer);
         taskviewer.setText(plan.getTask(task).toString());
+        taskChronometer.setBase(SystemClock.elapsedRealtime());
+        taskChronometer.start();
         repeatTTS.speak(plan.getTask(task).toString(), TextToSpeech.QUEUE_FLUSH, null);
     }
 

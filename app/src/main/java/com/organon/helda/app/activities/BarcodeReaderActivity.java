@@ -40,7 +40,7 @@ public class BarcodeReaderActivity extends AppCompatActivity {
     SurfaceView cameraView;
     SurfaceHolder cameraHolder;
     String detectedBarcodes;
-    Boolean connectivity, stopDetections;
+    Boolean connectivity;
 
 
     @Override
@@ -50,7 +50,6 @@ public class BarcodeReaderActivity extends AppCompatActivity {
         NetworkManager.getInstance(this);
         TextView txtView = findViewById(R.id.textView);
         connectivity= Utils.isNetworkAvailable(this);
-        stopDetections=false;
         connectivity_receiver= new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {

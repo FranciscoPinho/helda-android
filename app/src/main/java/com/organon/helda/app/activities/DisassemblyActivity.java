@@ -119,6 +119,8 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
             public void onClick(View v) {
                 repeatTTS.stop();
                 Intent anomalyActivity = new Intent(DisassemblyActivity.this, AnomalyActivity.class);
+                anomalyActivity.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                anomalyActivity.putExtra("currentPlan", plan);
                 startActivity(anomalyActivity);
             }
         });

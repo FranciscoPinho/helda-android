@@ -174,6 +174,7 @@ public class BarcodeReaderActivity extends AppCompatActivity {
                                     }
                                     Intent intent = new Intent(BarcodeReaderActivity.this, DisassemblyActivity.class);
                                     intent.putExtra("currentPlan", (Plan) response);
+                                    finish();
                                     startActivity(intent);
                                 }
                             });

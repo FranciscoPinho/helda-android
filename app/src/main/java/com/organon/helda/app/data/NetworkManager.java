@@ -48,16 +48,17 @@ public class NetworkManager
     }
 
 
-    public JSONObject getSync(String url, Map<String, String> params,int type){
+    public JSONObject getSync(String url, Map<String, String> params, int type){
         url = buildUrl(url, params);
         RequestFuture<JSONObject> future = RequestFuture.newFuture();
-        JsonObjectRequest request = new JsonObjectRequest(type,url, null, future, future);
+        JsonObjectRequest request = new JsonObjectRequest(type, url, null, future, future);
         requestQueue.add(request);
         try {
             return future.get(10, TimeUnit.SECONDS);
         }
 
         catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }

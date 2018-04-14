@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public final class Utils {
-
+    public enum State {stopped, skipped, solved}
     public static String convertStreamToString(InputStream inputStream) throws IOException {
         String str = "";
 

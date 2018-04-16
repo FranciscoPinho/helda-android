@@ -1,10 +1,7 @@
 package com.organon.helda.app.data;
 import java.lang.reflect.Type;
-import android.os.AsyncTask;
 
-import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
-import com.android.volley.ServerError;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.organon.helda.core.entities.Plan;
@@ -21,7 +18,9 @@ import java.util.Map;
 
 public class HttpPlanGateway implements PlanGateway {
    // private static final String BASE = "https://helda-server.herokuapp.com/";
+
     private static final String BASE = "http://"+System.getProperty("serverIP")+":4567/";
+
     private static String GET_PLAN = "plans/%s";
 
     @Override

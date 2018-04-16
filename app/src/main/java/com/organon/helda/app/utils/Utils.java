@@ -10,6 +10,9 @@ import java.io.InputStreamReader;
 import java.util.regex.Pattern;
 
 public final class Utils {
+
+    public enum State {stopped, skipped, solved}
+
     static private final String IPV4_REGEX = "(([0-1]?[0-9]{1,2}\\.)|(2[0-4][0-9]\\.)|(25[0-5]\\.)){3}(([0-1]?[0-9]{1,2})|(2[0-4][0-9])|(25[0-5]))";
     static private Pattern IPV4_PATTERN = Pattern.compile(IPV4_REGEX);
 

@@ -1,6 +1,6 @@
 package com.organon.helda.app.services;
 
-import com.organon.helda.app.data.HttpPlanGateway;
+
 import com.organon.helda.core.Context;
 import com.organon.helda.core.gateways.PlanGateway;
 import com.organon.helda.core.usecases.getplan.GetPlan;
@@ -35,4 +35,6 @@ public class PlanService {
         });
         helper.execute();
     }
+
+
 }

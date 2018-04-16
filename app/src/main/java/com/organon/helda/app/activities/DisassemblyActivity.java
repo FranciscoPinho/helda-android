@@ -1,8 +1,12 @@
 package com.organon.helda.app.activities;
 
+import android.app.Dialog;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.SystemClock;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
@@ -17,6 +21,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Chronometer;
 
 import com.organon.helda.R;
 import com.organon.helda.app.data.NetworkManager;
@@ -37,8 +42,11 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
     /* Named searches allow to quickly reconfigure the decoder */
     private static final String KWS_SEARCH = "keywords";
-    private static final String KWS_NEXT = "listo";
+    private static final String KWS_NEXT = "adelante";
     private static final String KWS_REVERT = "volver";
+    private static final String KWS_PAUSE = "detener";
+    private static final String KWS_STOP_PAUSE = "reanudar";
+
 
     /* Used to handle permission request */
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
@@ -50,10 +58,25 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
     private Plan plan;
     private TextToSpeech repeatTTS;
 
+    //Used to create a pop window when pause button is clicked
+    private Dialog pauseDialog;
+
+    private Chronometer taskChronometer;
+    private Chronometer pauseChronometer;
+
+    //helps taskChronometer in pauses
+    private long pauseInitialTime = 0;
+
+    private boolean pause = false;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_disassembly);
+        pauseDialog = new Dialog(this);
+
+        taskChronometer = (Chronometer) findViewById(R.id.taskChronometer);
 
         plan=(Plan)getIntent().getSerializableExtra("currentPlan");
         repeatTTS = new TextToSpeech(this, this);
@@ -99,6 +122,12 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
                 task++;
                 String planStr = plan.getTask(task).toString();
+
+                taskChronometer.stop();
+                //Reset and Start chronometer for new task
+                taskChronometer.setBase(SystemClock.elapsedRealtime());
+                taskChronometer.start();
+
                 taskViewer.setText(planStr);
 
             }
@@ -110,6 +139,12 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                     task--;
                 }
                 String planStr = plan.getTask(task).toString();
+
+                taskChronometer.stop();
+                //Reset and Start chronometer for new task
+                taskChronometer.setBase(SystemClock.elapsedRealtime());
+                taskChronometer.start();
+
                 taskViewer.setText(planStr);
             }
         });
@@ -124,14 +159,58 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 anomalyActivity.putExtra("task", task);
                 finish();
                 startActivity(anomalyActivity);
-            }
         });
     }
+              
+        Button paradaButton = findViewById(R.id.paradaButton);
+        paradaButton.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+
+                pauseDialog.setContentView(R.layout.activity_pause);
+
+                pause = true;
+
+                pauseDialog.setCanceledOnTouchOutside(false);
+                pauseDialog.setCancelable(false);
+
+                Button backButton;
+                backButton = (Button) pauseDialog.findViewById(R.id.reanudarButton);
+
+                pauseChronometer = (Chronometer) pauseDialog.findViewById(R.id.pauseChronometer);
+                
+                pauseInitialTime = SystemClock.elapsedRealtime();
+                taskChronometer.stop();
+
+                //Reset and Start pause Chronometer
+                pauseChronometer.setBase(SystemClock.elapsedRealtime());
+                pauseChronometer.start();
+
+
+                backButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+
+                        taskChronometer.setBase(taskChronometer.getBase() + SystemClock.elapsedRealtime() - pauseInitialTime);
+                        pauseInitialTime = 0;
+                        taskChronometer.start();
+
+                        pauseDialog.dismiss();
+                        pause = false;
+                    }
+                });
+                pauseDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                pauseDialog.show();
+
+            }
+
 
     @Override
     public void onInit(int i) {
         TextView taskviewer = findViewById(R.id.taskViewer);
         taskviewer.setText(plan.getTask(task).toString());
+        taskChronometer.setBase(SystemClock.elapsedRealtime());
+        taskChronometer.start();
         repeatTTS.speak(plan.getTask(task).toString(), TextToSpeech.QUEUE_FLUSH, null);
     }
 
@@ -205,21 +284,35 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         String text = hypothesis.getHypstr();
         switch (text) {
             case KWS_NEXT:
-                textView = findViewById(R.id.taskViewer);
-                task++;
-                planStr = plan.getTask(task).toString();
-                textView.setText(planStr);
+                if(!pause) {
+                    Button listoButton = findViewById(R.id.listoButton);
+                    listoButton.performClick();
+                }
                 break;
             case KWS_REVERT:
-                textView = findViewById(R.id.taskViewer);
-                if (task != 0) {
-                    task--;
+                if(!pause) {
+                    Button atrasButton = findViewById(R.id.atrasButton);
+                    atrasButton.performClick();
                 }
-                planStr = plan.getTask(task).toString();
-                textView.setText(planStr);
+                break;
+
+            case KWS_PAUSE:
+                if(!pause) {
+                    Button paradaButton = findViewById(R.id.paradaButton);
+                    paradaButton.performClick();
+                }
+                break;
+
+            case KWS_STOP_PAUSE:
+                if(pause) {
+                    Button backButton = pauseDialog.findViewById(R.id.reanudarButton);
+                    backButton.performClick();
+                }
+                break;
+
+            default:
                 break;
         }
-
         recognizer.stop();
     }
 

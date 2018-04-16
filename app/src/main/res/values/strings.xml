@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">Helpful Disassembly Assistant</string>
+    <string name="scanButton">Escanear código de barras</string>
+    <string name="configsLabel">configuraciones:</string>
+    <string name="serveripLabel">IP servidor</string>
     <string name="kws_caption">To start demonstration say \"listo\".</string>
     <string name="helda_caption">Good job! Say \"volver\" to go back</string>
     <string name="testButton">listo</string>

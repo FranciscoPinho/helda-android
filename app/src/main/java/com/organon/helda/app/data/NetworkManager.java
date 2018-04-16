@@ -56,7 +56,6 @@ public class NetworkManager
         try {
             return future.get(10, TimeUnit.SECONDS);
         }
-
         catch (Exception e) {
             e.printStackTrace();
             return null;

@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class HTTPAnomalyGateway implements AnomalyGateway {
-    private static final String BASE = "http://192.168.1.123:4567";
+    private static final String BASE = "http://"+System.getProperty("serverIP")+":4567/";
     private static String REGISTER_ANOMALY = "/anomaly/";
 
     public int insertAnomaly(int disassembly, int plan, String anomalyDate, String description, int task, Utils.State state){

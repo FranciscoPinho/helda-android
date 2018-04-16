@@ -36,7 +36,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
     /* Named searches allow to quickly reconfigure the decoder */
     private static final String KWS_SEARCH = "keywords";
-    private static final String KWS_NEXT = "listo";
+    private static final String KWS_NEXT = "adelante";
     private static final String KWS_REVERT = "volver";
 
     /* Used to handle permission request */

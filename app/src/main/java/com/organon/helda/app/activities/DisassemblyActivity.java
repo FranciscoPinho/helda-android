@@ -151,15 +151,16 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
         Button anomaliaButton = findViewById(R.id.anomaliaButton);
         anomaliaButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                repeatTTS.stop();
-                Intent anomalyActivity = new Intent(DisassemblyActivity.this, AnomalyActivity.class);
-                anomalyActivity.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                anomalyActivity.putExtra("currentPlan", plan);
-                anomalyActivity.putExtra("task", task);
-                startActivity(anomalyActivity);
+              public void onClick(View v) {
+                  repeatTTS.stop();
+                  Intent anomalyActivity = new Intent(DisassemblyActivity.this, AnomalyActivity.class);
+                  anomalyActivity.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                  anomalyActivity.putExtra("currentPlan", plan);
+                  anomalyActivity.putExtra("task", task);
+                  startActivity(anomalyActivity);
+              }
         });
-    }
+
               
         Button paradaButton = findViewById(R.id.paradaButton);
         paradaButton.setOnClickListener(new OnClickListener() {
@@ -176,7 +177,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 backButton = (Button) pauseDialog.findViewById(R.id.reanudarButton);
 
                 pauseChronometer = (Chronometer) pauseDialog.findViewById(R.id.pauseChronometer);
-                
+
                 pauseInitialTime = SystemClock.elapsedRealtime();
                 taskChronometer.stop();
 
@@ -202,7 +203,8 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 pauseDialog.show();
 
             }
-
+        });
+    }
 
     @Override
     public void onInit(int i) {

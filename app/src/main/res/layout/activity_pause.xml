@@ -5,8 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:backgroundTint="@android:color/darker_gray"
-    android:maxHeight="@dimen/cast_expanded_controller_ad_layout_height"
-    android:maxWidth="@dimen/cast_expanded_controller_ad_layout_width"
     tools:context=".app.activities.DisassemblyActivity"
     tools:layout_editor_absoluteY="81dp">
 
@@ -40,13 +38,14 @@
         app:layout_constraintBottom_toTopOf="@+id/reanudarButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pauseView" />
+        app:layout_constraintTop_toBottomOf="@+id/pauseView"
+        app:layout_constraintVertical_bias="0.435" />
 
     <Button
         android:id="@+id/reanudarButton"
         android:layout_width="144dp"
         android:layout_height="54dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="116dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:backgroundTint="@android:color/holo_blue_dark"

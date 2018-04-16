@@ -41,8 +41,11 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
     /* Named searches allow to quickly reconfigure the decoder */
     private static final String KWS_SEARCH = "keywords";
-    private static final String KWS_NEXT = "listo";
+    private static final String KWS_NEXT = "adelante";
     private static final String KWS_REVERT = "volver";
+    private static final String KWS_PAUSE = "detener";
+    private static final String KWS_STOP_PAUSE = "reanudar";
+
 
     /* Used to handle permission request */
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
@@ -62,6 +65,8 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
     //helps taskChronometer in pauses
     private long pauseInitialTime = 0;
+
+    private boolean pause = false;
 
 
     @Override
@@ -152,8 +157,12 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         paradaButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
 
-                recognizer.stop();
                 pauseDialog.setContentView(R.layout.activity_pause);
+
+                pause = true;
+
+                pauseDialog.setCanceledOnTouchOutside(false);
+                pauseDialog.setCancelable(false);
 
                 Button backButton;
                 backButton = (Button) pauseDialog.findViewById(R.id.reanudarButton);
@@ -168,10 +177,10 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 pauseChronometer.setBase(SystemClock.elapsedRealtime());
                 pauseChronometer.start();
 
+
                 backButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        pauseChronometer.stop();
 
                         //Pause time in miliseconds
                         //int pauseTimeMiliss = (int) (SystemClock.elapsedRealtime() - pauseChronometer.getBase());
@@ -180,9 +189,8 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                         pauseInitialTime = 0;
                         taskChronometer.start();
 
-                        recognizer.startListening(KWS_SEARCH);
-
                         pauseDialog.dismiss();
+                        pause = false;
                     }
                 });
                 pauseDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -271,39 +279,35 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         String text = hypothesis.getHypstr();
         switch (text) {
             case KWS_NEXT:
-                textView = findViewById(R.id.taskViewer);
-                task++;
-                planStr = plan.getTask(task).toString();
-
-                //Stop task chronometer
-                taskChronometer.stop();
-                //Task time in miliseconds
-                //int taskTimeMiliss = (int) (SystemClock.elapsedRealtime() - taskChronometer.getBase());
-                //Reset and Start chronometer for new task
-                taskChronometer.setBase(SystemClock.elapsedRealtime());
-                taskChronometer.start();
-
-                textView.setText(planStr);
+                if(!pause) {
+                    Button listoButton = findViewById(R.id.listoButton);
+                    listoButton.performClick();
+                }
                 break;
             case KWS_REVERT:
-                textView = findViewById(R.id.taskViewer);
-                if (task != 0) {
-                    task--;
+                if(!pause) {
+                    Button atrasButton = findViewById(R.id.atrasButton);
+                    atrasButton.performClick();
                 }
-                planStr = plan.getTask(task).toString();
+                break;
 
-                //Stop task chronometer
-                taskChronometer.stop();
-                //Task time in miliseconds
-                //int taskTimeMiliss = (int) (SystemClock.elapsedRealtime() - taskChronometer.getBase());
-                //Reset and Start chronometer for new task
-                taskChronometer.setBase(SystemClock.elapsedRealtime());
-                taskChronometer.start();
+            case KWS_PAUSE:
+                if(!pause) {
+                    Button paradaButton = findViewById(R.id.paradaButton);
+                    paradaButton.performClick();
+                }
+                break;
 
-                textView.setText(planStr);
+            case KWS_STOP_PAUSE:
+                if(pause) {
+                    Button backButton = pauseDialog.findViewById(R.id.reanudarButton);
+                    backButton.performClick();
+                }
+                break;
+
+            default:
                 break;
         }
-
         recognizer.stop();
     }
 

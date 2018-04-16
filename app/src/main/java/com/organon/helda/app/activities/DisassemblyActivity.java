@@ -157,7 +157,6 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 anomalyActivity.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 anomalyActivity.putExtra("currentPlan", plan);
                 anomalyActivity.putExtra("task", task);
-                finish();
                 startActivity(anomalyActivity);
         });
     }

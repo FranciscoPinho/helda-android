@@ -21,7 +21,7 @@ import java.util.Map;
 
 public class HttpPlanGateway implements PlanGateway {
    // private static final String BASE = "https://helda-server.herokuapp.com/";
-    private static final String BASE = "http://192.168.1.65:4567/";
+    private static final String BASE = "http://"+System.getProperty("serverIP")+":4567/";
     private static String GET_PLAN = "plans/%s";
 
     @Override
@@ -43,7 +43,7 @@ public class HttpPlanGateway implements PlanGateway {
                 boolean error = res.getBoolean("error");
                 if (error) return null;
             }
-            return new Plan(res.getString("model"),locale, parseListTasks(res.getJSONArray("tasks")));
+            return new Plan(res.getString("model"),locale, parseListTasks(res.getJSONArray("tasksA")));
         }
         catch (JSONException e) {
             throw new RuntimeException(e.getMessage());

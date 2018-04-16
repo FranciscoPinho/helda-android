@@ -29,7 +29,7 @@ public class PlanService {
             @Override
             public void onComplete(Object o) {
                 GetPlanResponseMessage response = (GetPlanResponseMessage)o;
-                if (response.isError()) listener.onComplete(response.getMessage());
+                if (response.isError()) listener.onComplete(null);
                 else listener.onComplete(response.plan);
             }
         });

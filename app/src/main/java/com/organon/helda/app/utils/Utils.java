@@ -7,8 +7,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.regex.Pattern;
 
 public final class Utils {
+    static private final String IPV4_REGEX = "(([0-1]?[0-9]{1,2}\\.)|(2[0-4][0-9]\\.)|(25[0-5]\\.)){3}(([0-1]?[0-9]{1,2})|(2[0-4][0-9])|(25[0-5]))";
+    static private Pattern IPV4_PATTERN = Pattern.compile(IPV4_REGEX);
+
+    public static boolean isValidIPV4(final String s)
+    {
+        return IPV4_PATTERN.matcher(s).matches();
+    }
 
     public static String convertStreamToString(InputStream inputStream) throws IOException {
         String str = "";

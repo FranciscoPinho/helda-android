@@ -122,10 +122,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 task++;
                 String planStr = plan.getTask(task).toString();
 
-                //Stop task chronometer
                 taskChronometer.stop();
-                //Task time in miliseconds
-                //int taskTimeMiliss = (int) (SystemClock.elapsedRealtime() - taskChronometer.getBase());
                 //Reset and Start chronometer for new task
                 taskChronometer.setBase(SystemClock.elapsedRealtime());
                 taskChronometer.start();
@@ -142,10 +139,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 }
                 String planStr = plan.getTask(task).toString();
 
-                //Stop task chronometer
                 taskChronometer.stop();
-                //Task time in miliseconds
-                //int taskTimeMiliss = (int) (SystemClock.elapsedRealtime() - taskChronometer.getBase());
                 //Reset and Start chronometer for new task
                 taskChronometer.setBase(SystemClock.elapsedRealtime());
                 taskChronometer.start();
@@ -168,8 +162,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 backButton = (Button) pauseDialog.findViewById(R.id.reanudarButton);
 
                 pauseChronometer = (Chronometer) pauseDialog.findViewById(R.id.pauseChronometer);
-
-                //Pause task Chronometer
+                
                 pauseInitialTime = SystemClock.elapsedRealtime();
                 taskChronometer.stop();
 
@@ -182,8 +175,6 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                     @Override
                     public void onClick(View v) {
 
-                        //Pause time in miliseconds
-                        //int pauseTimeMiliss = (int) (SystemClock.elapsedRealtime() - pauseChronometer.getBase());
 
                         taskChronometer.setBase(taskChronometer.getBase() + SystemClock.elapsedRealtime() - pauseInitialTime);
                         pauseInitialTime = 0;

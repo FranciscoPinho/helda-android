@@ -55,10 +55,6 @@ public class AnomalyProcessActivity extends AppCompatActivity {
         skipButton = findViewById(R.id.skipButton);
         skipButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
-                Intent intent = new Intent(AnomalyProcessActivity.this, DisassemblyActivity.class);
-                intent.putExtra("currentPlan", plan);
-                intent.putExtra("task", task);
                 if(connectivity) {
                     String timestamp = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date());
                     AnomalyService.insertAnomaly(1, 1,  String.valueOf(timestamp), anomalyText,task, Utils.State.skipped, new HTTPAnomalyGateway() {
@@ -76,16 +72,14 @@ public class AnomalyProcessActivity extends AppCompatActivity {
 
                             Intent intent = new Intent(AnomalyProcessActivity.this, DisassemblyActivity.class);
                             intent.putExtra("id", (int)response);
+                            intent.putExtra("task",task+1);
                             intent.putExtra("currentPlan", plan);
                             finish();
                             startActivity(intent);
 
                         }
                     });
-
                 }
-                finish();
-                startActivity(intent);
             }
         });
 

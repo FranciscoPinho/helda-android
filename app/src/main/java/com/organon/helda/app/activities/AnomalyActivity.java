@@ -1,23 +1,26 @@
 package com.organon.helda.app.activities;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.organon.helda.R;
+import com.organon.helda.app.data.HttpAnomalyGateway;
+import com.organon.helda.app.services.AnomalyService;
+import com.organon.helda.app.utils.Utils;
 import com.organon.helda.core.entities.Plan;
 
 import java.io.File;
@@ -28,6 +31,8 @@ public class AnomalyActivity extends AppCompatActivity {
 
     private Button registerAnomalyButton,recordAnomalyButton;
     private EditText anomalyText;
+    private BroadcastReceiver connectivity_receiver;
+    private Boolean connectivity;
     private Plan plan;
     private Integer task;
     private MediaRecorder mRecorder = null;
@@ -44,21 +49,25 @@ public class AnomalyActivity extends AppCompatActivity {
         setContentView(R.layout.activity_anomaly);
         plan=(Plan)getIntent().getSerializableExtra("currentPlan");
         task=(Integer)getIntent().getSerializableExtra("task");
-        //REMOVE THIS CODE AFTER US DONE
-        if(plan==null && task==null){
-            task=1;
-            plan=new Plan("TESTE","es");
-        }
-        //END OF REMOVE
+        connectivity= Utils.isNetworkAvailable(this);
+        connectivity_receiver= new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                connectivity= Utils.isNetworkAvailable(context);
+            }
+        };
+        registerReceiver(connectivity_receiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
+
         mFileName = getFilesDir().getAbsolutePath();
         //include disassembly ID when Perspectives US done
-        mFileName += "/"+task+"-"+plan.getModel()+".3gp";
+        mFileName += "/"+task+"-"+plan.getModel()+".mp4";
         ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
-
         anomalyText = findViewById(R.id.AnomaliaInputText);
-        anomalyText.requestFocus();
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        setupRecordingButtonListeners();
 
+    }
+
+    private void setupRecordingButtonListeners(){
         registerAnomalyButton = findViewById(R.id.registerAnomalyButton);
         registerAnomalyButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -71,15 +80,36 @@ public class AnomalyActivity extends AppCompatActivity {
             public void onClick(View v) {
                 onRecord(mStartRecording);
                 if (mStartRecording) {
-                    recordAnomalyButton.setText("Terminar la grabación");
+                    recordAnomalyButton.setText("Terminar la grabación e enviar");
+                    registerAnomalyButton.setEnabled(false);
                 } else {
-                    recordAnomalyButton.setText("Grabar voz");
-                    //send multipart request here with audio
-                    //processAnomaly();
+                    recordAnomalyButton.setText("Uploading...");
+                    uploadRecording();
                 }
                 mStartRecording = !mStartRecording;
             }
         });
+    }
+
+    public void uploadRecording(){
+        if(connectivity) {
+            AnomalyService.uploadRecording(1,new File(mFileName), new HttpAnomalyGateway(), new AnomalyService.Listener() {
+                @Override
+                public void onComplete(Object response) {
+                    if (response == null) {
+                        TextView textView = findViewById(R.id.textView3);
+                        textView.setText("Erro en enviar la grabación");
+                        recordAnomalyButton.setText("Grabar voz");
+                        registerAnomalyButton.setEnabled(true);
+                    }
+                    else processAnomaly();
+                }
+            });
+        }
+        else {
+            TextView textView = findViewById(R.id.textView3);
+            textView.setText(R.string.noConnection);
+        }
     }
 
     @Override
@@ -120,7 +150,7 @@ public class AnomalyActivity extends AppCompatActivity {
             }
         });
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         mRecorder.setOutputFile(mFileName);
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
 
@@ -135,6 +165,7 @@ public class AnomalyActivity extends AppCompatActivity {
 
     private void stopRecording() {
         mRecorder.stop();
+        mRecorder.reset();
         mRecorder.release();
         mRecorder = null;
     }
@@ -150,6 +181,15 @@ public class AnomalyActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        unregisterReceiver(connectivity_receiver);
+        if(mRecorder!=null)
+            stopRecording();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        this.finish();
     }
 
 }

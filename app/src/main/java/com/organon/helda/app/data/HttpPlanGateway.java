@@ -29,7 +29,6 @@ public class HttpPlanGateway implements PlanGateway {
         url.append(String.format(GET_PLAN,"TESTE"));
         Map<String, String> params = new HashMap<>();
         params.put("locale", locale);
-
         NetworkManager networkManager = NetworkManager.getInstance();
         JSONObject res = null;
         res = networkManager.getSync(url.toString(), params, Request.Method.GET);

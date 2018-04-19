@@ -1,17 +1,28 @@
 package com.organon.helda.app.data;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkResponse;
 import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
 import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -55,6 +66,35 @@ public class NetworkManager
         requestQueue.add(request);
         try {
             return future.get(10, TimeUnit.SECONDS);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public JSONObject getSyncRecordingUpload(final String url, final File payload, final Map<String, String> params){
+        RequestFuture<JSONObject> future = RequestFuture.newFuture();
+        VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(Request.Method.POST, url, future,future) {
+            @Override
+            protected Map<String, String> getParams() {
+                return params;
+            }
+            @Override
+            protected Map<String, DataPart> getByteData() {
+                Map<String, DataPart> params = new HashMap<>();
+                try {
+                    params.put("recording", new DataPart(payload.getName(), com.google.common.io.Files.toByteArray(payload), "audio/mpeg"));
+                }
+                catch(IOException e){
+                    e.printStackTrace();
+                }
+                return params;
+            }
+        };
+        requestQueue.add(multipartRequest);
+        try {
+            return future.get(20, TimeUnit.SECONDS);
         }
         catch (Exception e) {
             e.printStackTrace();

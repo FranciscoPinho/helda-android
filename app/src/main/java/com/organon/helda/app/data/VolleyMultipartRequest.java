@@ -7,6 +7,10 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.RequestFuture;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -15,14 +19,14 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
-// Credit to https://gist.github.com/anggadarkprince/a7c536da091f4b26bb4abf2f92926594
+// Adapted from https://gist.github.com/anggadarkprince/a7c536da091f4b26bb4abf2f92926594
 
-public class VolleyMultipartRequest extends Request<NetworkResponse> {
+public class VolleyMultipartRequest extends Request<JSONObject> {
     private final String twoHyphens = "--";
     private final String lineEnd = "\r\n";
     private final String boundary = "apiclient-" + System.currentTimeMillis();
 
-    private Response.Listener<NetworkResponse> mListener;
+    private Response.Listener<JSONObject> mListener;
     private Response.ErrorListener mErrorListener;
     private Map<String, String> mHeaders;
 
@@ -35,7 +39,7 @@ public class VolleyMultipartRequest extends Request<NetworkResponse> {
      * @param errorListener on error http or library timeout
      */
     public VolleyMultipartRequest(String url, Map<String, String> headers,
-                                  Response.Listener<NetworkResponse> listener,
+                                  Response.Listener<JSONObject> listener,
                                   Response.ErrorListener errorListener) {
         super(Method.POST, url, errorListener);
         this.mListener = listener;
@@ -52,11 +56,17 @@ public class VolleyMultipartRequest extends Request<NetworkResponse> {
      * @param errorListener on error event handler
      */
     public VolleyMultipartRequest(int method, String url,
-                                  Response.Listener<NetworkResponse> listener,
+                                  Response.Listener<JSONObject> listener,
                                   Response.ErrorListener errorListener) {
         super(method, url, errorListener);
         this.mListener = listener;
         this.mErrorListener = errorListener;
+    }
+
+    public VolleyMultipartRequest(int method, String url, RequestFuture<JSONObject> future, RequestFuture<JSONObject> error) {
+        super(method,url,error);
+        this.mListener=future;
+        this.mErrorListener=error;
     }
 
     @Override
@@ -97,6 +107,18 @@ public class VolleyMultipartRequest extends Request<NetworkResponse> {
         return null;
     }
 
+    @Override
+    protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+        try{
+            String jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+            return Response.success(new JSONObject(jsonString),HttpHeaderParser.parseCacheHeaders(response));
+        } catch (UnsupportedEncodingException e) {
+            return Response.error(new ParseError(e));
+        } catch (JSONException je) {
+            return Response.error(new ParseError(je));
+        }
+    }
+
     /**
      * Custom method handle data payload.
      *
@@ -107,25 +129,16 @@ public class VolleyMultipartRequest extends Request<NetworkResponse> {
         return null;
     }
 
-    @Override
-    protected Response<NetworkResponse> parseNetworkResponse(NetworkResponse response) {
-        try {
-            return Response.success(
-                    response,
-                    HttpHeaderParser.parseCacheHeaders(response));
-        } catch (Exception e) {
-            return Response.error(new ParseError(e));
-        }
-    }
+
 
     @Override
-    protected void deliverResponse(NetworkResponse response) {
+    protected void deliverResponse(JSONObject response) {
         mListener.onResponse(response);
     }
 
     @Override
     public void deliverError(VolleyError error) {
-        mErrorListener.onErrorResponse(error);
+            mErrorListener.onErrorResponse(error);
     }
 
     /**

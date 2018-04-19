@@ -46,7 +46,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
     private static final String KWS_REVERT = "volver";
     private static final String KWS_PAUSE = "detener";
     private static final String KWS_STOP_PAUSE = "reanudar";
-
+    private static final String KWS_ANOMALY = "anomalia";
 
     /* Used to handle permission request */
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
@@ -153,6 +153,8 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         anomaliaButton.setOnClickListener(new OnClickListener() {
               public void onClick(View v) {
                   repeatTTS.stop();
+                  recognizer.cancel();
+                  recognizer.shutdown();
                   Intent anomalyActivity = new Intent(DisassemblyActivity.this, AnomalyActivity.class);
                   anomalyActivity.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                   anomalyActivity.putExtra("currentPlan", plan);
@@ -189,8 +191,6 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 backButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
-
                         taskChronometer.setBase(taskChronometer.getBase() + SystemClock.elapsedRealtime() - pauseInitialTime);
                         pauseInitialTime = 0;
                         taskChronometer.start();
@@ -205,9 +205,20 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
             }
         });
     }
-
+    @Override
+    public void onResume(){
+        super.onResume();
+        // Recognizer initialization is a time-consuming and it involves IO,
+        // so we execute it in async task
+        if(repeatTTS==null && recognizer==null) {
+            repeatTTS = new TextToSpeech(this, this);
+            repeatTTS.setLanguage(new Locale("es", "ES"));
+            new DisassemblyActivity.SetupTask(this).execute();
+        }
+    }
     @Override
     public void onInit(int i) {
+
         TextView taskviewer = findViewById(R.id.taskViewer);
         taskviewer.setText(plan.getTask(task).toString());
         taskChronometer.setBase(SystemClock.elapsedRealtime());
@@ -270,6 +281,19 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         }
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(repeatTTS != null) {
+            repeatTTS.shutdown();
+            repeatTTS=null;
+        }
+        if (recognizer != null) {
+            recognizer.cancel();
+            recognizer.shutdown();
+            recognizer=null;
+        }
+    }
     /**
      * In partial result we get quick updates about current hypothesis. In
      * keyword spotting mode we can react here, in other modes we need to wait
@@ -296,21 +320,24 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                     atrasButton.performClick();
                 }
                 break;
-
             case KWS_PAUSE:
                 if(!pause) {
                     Button paradaButton = findViewById(R.id.paradaButton);
                     paradaButton.performClick();
                 }
                 break;
-
+            case KWS_ANOMALY:
+                if(!pause) {
+                    Button anomalyButton = findViewById(R.id.anomaliaButton);
+                    anomalyButton.performClick();
+                }
+                break;
             case KWS_STOP_PAUSE:
                 if(pause) {
                     Button backButton = pauseDialog.findViewById(R.id.reanudarButton);
                     backButton.performClick();
                 }
                 break;
-
             default:
                 break;
         }

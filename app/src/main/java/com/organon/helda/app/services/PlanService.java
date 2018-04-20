@@ -9,28 +9,26 @@ import com.organon.helda.core.usecases.getplan.GetPlanResponseMessage;
 
 
 public class PlanService {
-    public interface Listener {
-        void onComplete(Object response);
+    private Context context;
+
+    public PlanService(Context context) {
+        this.context = context;
     }
 
-    public static void getPlan(final String planModel, final String locale, final PlanGateway gateway, final Listener listener) {
+    public void getPlan(final int planId, final ServiceHelper.Listener<GetPlanResponseMessage> listener) {
         ServiceHelper helper = new ServiceHelper(new ServiceHelper.Runnable() {
             @Override
             public Object run() {
                 GetPlanRequestMessage request = new GetPlanRequestMessage();
-                request.model = planModel;
-                request.locale = locale;
-                Context executionContext = new Context();
-                executionContext.planGateway = gateway;
-                GetPlan interactor = new GetPlan(executionContext);
+                request.planId = planId;
+                GetPlan interactor = new GetPlan(context);
                 return interactor.handle(request);
             }
         }, new ServiceHelper.Listener() {
             @Override
             public void onComplete(Object o) {
                 GetPlanResponseMessage response = (GetPlanResponseMessage)o;
-                if (response.isError()) listener.onComplete(null);
-                else listener.onComplete(response.plan);
+                listener.onComplete(response);
             }
         });
         helper.execute();

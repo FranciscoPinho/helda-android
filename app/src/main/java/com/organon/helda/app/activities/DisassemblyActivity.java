@@ -26,6 +26,7 @@ import android.widget.Chronometer;
 import com.organon.helda.R;
 import com.organon.helda.app.data.NetworkManager;
 import com.organon.helda.core.entities.Plan;
+import com.organon.helda.core.entities.Task;
 
 import java.io.File;
 import java.util.Locale;
@@ -76,7 +77,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         setContentView(R.layout.activity_disassembly);
         pauseDialog = new Dialog(this);
 
-        taskChronometer = (Chronometer) findViewById(R.id.taskChronometer);
+        taskChronometer = findViewById(R.id.taskChronometer);
 
         plan=(Plan)getIntent().getSerializableExtra("currentPlan");
         repeatTTS = new TextToSpeech(this, this);
@@ -109,7 +110,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                                       int before, int count) {
                 if(repeatTTS.isSpeaking())
                     repeatTTS.stop();
-                repeatTTS.speak(plan.getTask(task).toString(), TextToSpeech.QUEUE_FLUSH, null);
+                repeatTTS.speak(getCurrentTask().getDescription(), TextToSpeech.QUEUE_FLUSH, null);
             }
         });
 
@@ -121,7 +122,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 //to see a string representation of the plan currently in this activity
 
                 task++;
-                String planStr = plan.getTask(task).toString();
+                String planStr = getCurrentTask().getDescription();
 
                 taskChronometer.stop();
                 //Reset and Start chronometer for new task
@@ -138,7 +139,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 if (task != 0) {
                     task--;
                 }
-                String planStr = plan.getTask(task).toString();
+                String planStr = getCurrentTask().getDescription();
 
                 taskChronometer.stop();
                 //Reset and Start chronometer for new task
@@ -220,10 +221,10 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
     public void onInit(int i) {
 
         TextView taskviewer = findViewById(R.id.taskViewer);
-        taskviewer.setText(plan.getTask(task).toString());
+        taskviewer.setText(getCurrentTask().getDescription());
         taskChronometer.setBase(SystemClock.elapsedRealtime());
         taskChronometer.start();
-        repeatTTS.speak(plan.getTask(task).toString(), TextToSpeech.QUEUE_FLUSH, null);
+        repeatTTS.speak(getCurrentTask().getDescription(), TextToSpeech.QUEUE_FLUSH, null);
     }
 
     private static class SetupTask extends AsyncTask<Void, Void, Exception> {
@@ -391,5 +392,9 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
     @Override
     public void onTimeout() {
         return;
+    }
+
+    private Task getCurrentTask() {
+        return plan.getTasksWorkerA().get(task);
     }
 }

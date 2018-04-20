@@ -16,6 +16,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,15 +60,27 @@ public class NetworkManager
     }
 
 
-    public JSONObject getSync(String url, Map<String, String> params, int type){
+    public JSONObject getSync(String url, Map<String, String> params) {
         url = buildUrl(url, params);
         RequestFuture<JSONObject> future = RequestFuture.newFuture();
-        JsonObjectRequest request = new JsonObjectRequest(type, url, null, future, future);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, future, future);
         requestQueue.add(request);
         try {
-            return future.get(10, TimeUnit.SECONDS);
+            return future.get(NetworkConstants.TIMEOUT, TimeUnit.SECONDS);
         }
         catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public JSONObject postSync(String url, Map<String, String> params) {
+        RequestFuture<JSONObject> future = RequestFuture.newFuture();
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params), future, future);
+        requestQueue.add(request);
+        try {
+            return future.get(NetworkConstants.TIMEOUT, TimeUnit.SECONDS);
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }

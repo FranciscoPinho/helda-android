@@ -1,8 +1,6 @@
-package com.organon.helda.core.usecases.registerAnomaly;
+package com.organon.helda.core.usecases.registeranomaly;
 
 import com.organon.helda.app.utils.Utils;
-
-import java.security.Timestamp;
 
 /**
  * Created by marga on 4/14/2018.

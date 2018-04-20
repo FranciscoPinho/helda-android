@@ -1,53 +1,65 @@
 package com.organon.helda.core.entities;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 public class Plan extends Entity implements Serializable {
     private String model;
     private String locale;
-    private List<Task> tasks;
+    private List<Task> tasksWorkerA;
+    private List<Task> tasksWorkerB;
+    private Date modified;
 
-    public Plan(String model, String locale) {
-        this.model = model;
-        this.locale = locale;
-        this.tasks = new ArrayList<>();
-    }
-
-    public Plan(String model,String locale, List<Task> tasks){
-        this.model=model;
-        this.locale=locale;
-        this.tasks=tasks;
-    }
-
-    public void addTask(Task task) {
-        this.tasks.add(task);
-    }
-
-    public Task getTask(int number) {
-        if (number < tasks.size()) return tasks.get(number);
-        return null;
-    }
-
-    public List<Task> getTasks(){
-        return tasks;
+    public Plan(int id) {
+        setId(id);
     }
 
     public String getModel() {
         return model;
     }
 
+    public Plan setModel(String model) {
+        this.model = model;
+        return this;
+    }
+
     public String getLocale() {
         return locale;
     }
 
-    public String toString() {
-        String string= "Model: "+this.model+"\nTasks: \n";
-        for(Task t:tasks){
-            string+=t.toString()+"\n";
-        }
-        return string;
+    public Plan setLocale(String locale) {
+        this.locale = locale;
+        return this;
+    }
+
+    public Date getModified() {
+        return modified;
+    }
+
+    public Plan setModified(Date modified) {
+        this.modified = modified;
+        return this;
+    }
+
+    public List<Task> getTasksWorkerA() {
+        return tasksWorkerA;
+    }
+
+    public Plan setTasksWorkerA(List<Task> tasks) {
+        tasksWorkerA = tasks;
+        return this;
+    }
+
+    public List<Task> getTasksWorkerB() {
+        return tasksWorkerB;
+    }
+
+    public Plan setTasksWorkerB(List<Task> tasks) {
+        tasksWorkerB = tasks;
+        return this;
     }
 }

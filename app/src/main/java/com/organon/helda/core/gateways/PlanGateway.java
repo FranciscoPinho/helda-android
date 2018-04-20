@@ -6,5 +6,5 @@ import java.io.InputStream;
 import java.util.Locale;
 
 public interface PlanGateway {
-    Plan  getPlan(String model, String locale);
+    Plan getPlan(int planId);
 }

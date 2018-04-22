@@ -24,10 +24,17 @@ import android.widget.TextView;
 import android.widget.Chronometer;
 
 import com.organon.helda.R;
+import com.organon.helda.app.data.HttpAnomalyGateway;
+import com.organon.helda.app.data.HttpTaskTimeGateway;
 import com.organon.helda.app.data.NetworkManager;
+import com.organon.helda.app.services.AnomalyService;
+import com.organon.helda.app.services.TaskTimeService;
+import com.organon.helda.app.utils.Utils;
 import com.organon.helda.core.entities.Plan;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -124,6 +131,22 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 String planStr = plan.getTask(task).toString();
 
                 taskChronometer.stop();
+
+                //Task time in miliseconds
+                int taskTimeMiliss = (int) (SystemClock.elapsedRealtime() - taskChronometer.getBase());
+
+                TaskTimeService.insertTaskTime(1, task, taskTimeMiliss, new HttpTaskTimeGateway(), new TaskTimeService.Listener() {
+                    @Override
+                    public void onComplete(Object response) {
+                        if (response == null) {
+                            TextView textView = findViewById(R.id.textView3);
+                            textView.setText("Erro en registro del tiempo de la tarea");
+                        }
+
+                        finish();
+                    }
+                });
+
                 //Reset and Start chronometer for new task
                 taskChronometer.setBase(SystemClock.elapsedRealtime());
                 taskChronometer.start();

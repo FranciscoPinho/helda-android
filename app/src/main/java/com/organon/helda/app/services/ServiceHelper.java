@@ -7,8 +7,8 @@ public class ServiceHelper extends AsyncTask<Void, Void, Object>  {
         Object run();
     }
 
-    public interface Listener {
-        void onComplete(Object o);
+    public interface Listener<T> {
+        void onComplete(T o);
     }
 
     private Runnable runnable;

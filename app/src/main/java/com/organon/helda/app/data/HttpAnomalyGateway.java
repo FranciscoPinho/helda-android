@@ -20,9 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HttpAnomalyGateway implements AnomalyGateway {
-    private static final String BASE = "http://"+System.getProperty("serverIP")+":4567/";
-    private static String REGISTER_ANOMALY = "anomaly/";
-    private static String UPLOAD_RECORDING = "anomaly/audio";
+
 
     public int insertAnomaly(int disassembly, int plan, String anomalyDate, String description, int task, Utils.State state){
         Map<String, String> params = new HashMap<>();
@@ -34,7 +32,7 @@ public class HttpAnomalyGateway implements AnomalyGateway {
         params.put("state", String.valueOf(state));
 
         NetworkManager networkManager = NetworkManager.getInstance();
-        JSONObject res = networkManager.getSync(BASE + REGISTER_ANOMALY, params, Request.Method.POST);
+        JSONObject res = networkManager.postSync(NetworkConstants.BASE_URL + NetworkConstants.REGISTER_ANOMALY, params);
 
         if (res == null) {
             System.out.println("Response HTTPAnamoly from server is null");
@@ -59,7 +57,7 @@ public class HttpAnomalyGateway implements AnomalyGateway {
         params.put("disassembly", String.valueOf(disassembly));
         params.put("filename",payload.getName());
         NetworkManager networkManager = NetworkManager.getInstance();
-        JSONObject res = networkManager.getSyncRecordingUpload(BASE+UPLOAD_RECORDING,payload,params);
+        JSONObject res = networkManager.getSyncRecordingUpload(NetworkConstants.BASE_URL + NetworkConstants.UPLOAD_RECORDING, payload, params);
         if (res == null) {
             return null;
         }

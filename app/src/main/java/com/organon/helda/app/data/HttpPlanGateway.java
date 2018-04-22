@@ -3,6 +3,7 @@ import java.lang.reflect.Type;
 
 import com.android.volley.Request;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.organon.helda.core.entities.Plan;
 import com.organon.helda.core.entities.Task;
@@ -12,45 +13,50 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.organon.helda.app.utils.GatewayUtils.jsonToDate;
+import static com.organon.helda.app.utils.GatewayUtils.jsonToTaskList;
+
 public class HttpPlanGateway implements PlanGateway {
-   // private static final String BASE = "https://helda-server.herokuapp.com/";
-
-    private static final String BASE = "http://"+System.getProperty("serverIP")+":4567/";
-
-    private static String GET_PLAN = "plans/%s";
-
     @Override
-    public Plan getPlan(String model, String locale) {
-        StringBuilder url = new StringBuilder(BASE);
-        url.append(String.format(GET_PLAN,"TESTE"));
+    public Plan getPlan(int planId) {
+        StringBuilder url = new StringBuilder(NetworkConstants.BASE_URL);
+        url.append(String.format(NetworkConstants.GET_PLAN, planId));
+
         Map<String, String> params = new HashMap<>();
-        params.put("locale", locale);
         NetworkManager networkManager = NetworkManager.getInstance();
-        JSONObject res = null;
-        res = networkManager.getSync(url.toString(), params, Request.Method.GET);
-        if(res==null)
-            return null;
+        JSONObject res = networkManager.getSync(url.toString(), params);
+        if(res == null) return null;
 
         try {
-
             if(res.has("error")) {
                 boolean error = res.getBoolean("error");
                 if (error) return null;
             }
-            return new Plan(res.getString("model"),locale, parseListTasks(res.getJSONArray("tasksA")));
+
+            int id = res.getInt("id");
+            String locale = res.getString("locale");
+            String model = res.getString("model");
+            Date modified = jsonToDate(res.getJSONObject("modified"));
+            List<Task> tasksWorkerA = jsonToTaskList(res.getJSONArray("tasksWorkerA"));
+            List<Task> tasksWorkerB = jsonToTaskList(res.getJSONArray("tasksWorkerB"));
+
+            return new Plan(id)
+                    .setLocale(locale)
+                    .setModel(model)
+                    .setModified(modified)
+                    .setTasksWorkerA(tasksWorkerA)
+                    .setTasksWorkerB(tasksWorkerB);
         }
         catch (JSONException e) {
             throw new RuntimeException(e.getMessage());
         }
-    }
-
-    public List<Task> parseListTasks(JSONArray tasks){
-        Gson gson = new Gson();
-        Type type = new TypeToken<List<Task>>() {}.getType();
-        return gson.fromJson(tasks.toString(), type);
     }
 }

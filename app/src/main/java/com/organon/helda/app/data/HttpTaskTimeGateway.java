@@ -33,7 +33,7 @@ public class HttpTaskTimeGateway implements TaskTimeTableGateway {
         JSONObject res = networkManager.getSync(BASE + REGISTER_TASKTIME, params, Request.Method.POST);
 
         if (res == null) {
-            System.out.println("Response HTTPAnamoly from server is null");
+            System.out.println("Response HTTPTaskTime from server is null");
             return -1;
         }
 
@@ -43,7 +43,7 @@ public class HttpTaskTimeGateway implements TaskTimeTableGateway {
                 if (error)
                     return -1;
             }
-            return res.getInt("id");
+            return 1;
         }
         catch (JSONException e) {
             throw new RuntimeException(e.getMessage());

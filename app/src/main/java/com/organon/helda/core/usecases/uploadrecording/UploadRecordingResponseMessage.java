@@ -1,10 +1,6 @@
-package com.organon.helda.core.usecases.uploadRecording;
+package com.organon.helda.core.usecases.uploadrecording;
 
 import com.organon.helda.core.usecases.ResponseMessage;
-
-/**
- * Created by Holykael on 19/04/2018.
- */
 
 public class UploadRecordingResponseMessage extends ResponseMessage<UploadRecordingResponseMessage> {
 }

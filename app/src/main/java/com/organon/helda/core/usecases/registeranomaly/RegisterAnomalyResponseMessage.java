@@ -1,4 +1,4 @@
-package com.organon.helda.core.usecases.registerAnomaly;
+package com.organon.helda.core.usecases.registeranomaly;
 
 import com.organon.helda.core.usecases.ResponseMessage;
 

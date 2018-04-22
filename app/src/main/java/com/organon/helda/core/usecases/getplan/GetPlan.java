@@ -15,12 +15,8 @@ public class GetPlan extends RequestHandler<GetPlanRequestMessage, GetPlanRespon
 
     @Override
     protected boolean isValid(GetPlanRequestMessage request) {
-        if (request.model == null || request.model.equals("")) {
-            setValidationError("Model must be a non-empty string.");
-            return false;
-        }
-        if (request.locale == null || request.locale.equals("")) {
-            setValidationError("Locale must be a non-empty string.");
+        if (request.planId <= 0) {
+            setValidationError("Plan id must be a positive integer");
             return false;
         }
         return true;
@@ -28,7 +24,7 @@ public class GetPlan extends RequestHandler<GetPlanRequestMessage, GetPlanRespon
 
     @Override
     protected GetPlanResponseMessage onValid(GetPlanRequestMessage request) {
-        Plan plan = context.planGateway.getPlan(request.model, request.locale);
+        Plan plan = context.planGateway.getPlan(request.planId);
         if (plan == null) {
             return new GetPlanResponseMessage().error("Plan not found.", ErrorCode.NOT_FOUND);
         }

@@ -7,28 +7,27 @@ public class Task extends Entity implements Serializable{
 
     private int duration;
 
-    public Task(String description, int duration) {
-        this.description = description;
-        this.duration = duration;
+    public Task() {}
+
+    public Task(int id) {
+        setId(id);
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public Task setDescription(String description) {
         this.description = description;
+        return this;
     }
 
     public int getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public Task setDuration(int duration) {
         this.duration = duration;
-    }
-
-    public String toString(){
-        return this.description;
+        return this;
     }
 }

@@ -21,12 +21,13 @@ import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
-import com.organon.helda.app.data.HttpPlanGateway;
+import com.organon.helda.app.Application;
 import com.organon.helda.app.data.NetworkManager;
-import com.organon.helda.app.services.PlanService;
+import com.organon.helda.app.services.DisassemblyService;
+import com.organon.helda.app.services.ServiceHelper;
 import com.organon.helda.app.utils.Utils;
-import com.organon.helda.core.entities.Plan;
 import com.organon.helda.R;
+import com.organon.helda.core.usecases.createdisassembly.CreateDisassemblyResponseMessage;
 
 import java.io.IOException;
 
@@ -83,10 +84,10 @@ public class BarcodeReaderActivity extends AppCompatActivity {
                 try {
                     cameraSource.start(cameraView.getHolder());
                 }
-                catch(SecurityException e){
+                catch(SecurityException e) {
                     e.printStackTrace();
                 }
-                catch(IOException e){
+                catch(IOException e) {
                     e.printStackTrace();
                 }
             } else {
@@ -138,57 +139,55 @@ public class BarcodeReaderActivity extends AppCompatActivity {
             public void receiveDetections(Detector.Detections<Barcode> detections) {
                 final SparseArray<Barcode> barcodes = detections.getDetectedItems();
                 if (barcodes.size() > 0) {
-                        for(int i=0; i<barcodes.size();i++){
-                           detectedBarcodes = "Barcode "+i+": "+barcodes.valueAt(i).rawValue+"\n";
-                        }
+                    for(int i=0; i<barcodes.size();i++){
+                       detectedBarcodes = "Barcode "+i+": "+barcodes.valueAt(i).rawValue+"\n";
+                    }
 
-                        if(connectivity) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    TextView textView = findViewById(R.id.textView);
-                                    textView.setText("camera needs to be restarted to avoid instantaneous redetections of barcode, wait...\n"+detectedBarcodes);
-                                    cameraSource.stop();
-
-                                }
-                            });
-                            PlanService.getPlan("TESTE", "es", new HttpPlanGateway(), new PlanService.Listener() {
-                                @Override
-                                public void onComplete(Object response) {
-                                    if (response == null) {
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                               try {
-                                                   if (ContextCompat.checkSelfPermission(BarcodeReaderActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
-                                                       cameraSource.start(cameraView.getHolder());
-                                               }
-                                                catch(IOException e){
-                                                    e.printStackTrace();
-                                                }
-                                                TextView textView = findViewById(R.id.textView);
-                                                textView.setText("detecciones activas de nuevo");
+                    if(connectivity) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                TextView textView = findViewById(R.id.textView);
+                                textView.setText("camera needs to be restarted to avoid instantaneous redetections of barcode, wait...\n"+detectedBarcodes);
+                                cameraSource.stop();
+                            }
+                        });
+                        // TODO: The VIN should be read from the barcode in the future
+                        new DisassemblyService(Application.getContext()).createDisassembly("Random", new ServiceHelper.Listener<CreateDisassemblyResponseMessage>() {
+                            @Override
+                            public void onComplete(CreateDisassemblyResponseMessage response) {
+                                if (response.disassembly == null) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                if (ContextCompat.checkSelfPermission(BarcodeReaderActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
+                                                    cameraSource.start(cameraView.getHolder());
                                             }
-                                        });
-                                        return;
-                                    }
-                                    Intent intent = new Intent(BarcodeReaderActivity.this, DisassemblyActivity.class);
-                                    intent.putExtra("currentPlan", (Plan) response);
+                                            catch(IOException e){
+                                                e.printStackTrace();
+                                            }
+                                            TextView textView = findViewById(R.id.textView);
+                                            textView.setText("detecciones activas de nuevo");
+                                        }
+                                    });
+                                } else {
+                                    Intent intent = new Intent(BarcodeReaderActivity.this, ChooseTasksActivity.class);
+                                    intent.putExtra("disassembly", response.disassembly);
                                     finish();
                                     startActivity(intent);
                                 }
-                            });
-
-                        }
-                        else runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(BarcodeReaderActivity.this, R.string.noConnection, Toast.LENGTH_SHORT).show();
                             }
                         });
+                    }
+                    else runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(BarcodeReaderActivity.this, R.string.noConnection, Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }
         });
     }
-
 }

@@ -29,6 +29,7 @@ import com.organon.helda.core.entities.Plan;
 import com.organon.helda.core.entities.Task;
 
 import java.io.File;
+import java.util.List;
 import java.util.Locale;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -54,6 +55,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
     private SpeechRecognizer recognizer;
 
+    private List<Task> tasks;
     private static int task = 0;
 
     private Plan plan;
@@ -80,6 +82,10 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         taskChronometer = findViewById(R.id.taskChronometer);
 
         plan=(Plan)getIntent().getSerializableExtra("currentPlan");
+        String worker = getIntent().getStringExtra("worker");
+        if (worker.equals("A")) tasks = plan.getTasksWorkerA();
+        if (worker.equals("B")) tasks = plan.getTasksWorkerB();
+
         repeatTTS = new TextToSpeech(this, this);
         repeatTTS.setLanguage(new Locale("es", "ES"));
         // Super important, this must be called on application startup
@@ -395,6 +401,6 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
     }
 
     private Task getCurrentTask() {
-        return plan.getTasksWorkerA().get(task);
+        return tasks.get(task);
     }
 }

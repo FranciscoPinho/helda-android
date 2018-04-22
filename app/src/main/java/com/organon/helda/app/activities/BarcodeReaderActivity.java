@@ -11,7 +11,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -23,17 +22,12 @@ import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.organon.helda.app.Application;
-import com.organon.helda.app.data.HttpDisassemblyGateway;
-import com.organon.helda.app.data.HttpPlanGateway;
 import com.organon.helda.app.data.NetworkManager;
 import com.organon.helda.app.services.DisassemblyService;
-import com.organon.helda.app.services.PlanService;
 import com.organon.helda.app.services.ServiceHelper;
 import com.organon.helda.app.utils.Utils;
-import com.organon.helda.core.entities.Plan;
 import com.organon.helda.R;
-import com.organon.helda.core.usecases.getplan.GetPlanResponseMessage;
-import com.organon.helda.core.usecases.startdisassembly.StartDisassemblyResponseMessage;
+import com.organon.helda.core.usecases.createdisassembly.CreateDisassemblyResponseMessage;
 
 import java.io.IOException;
 
@@ -156,14 +150,13 @@ public class BarcodeReaderActivity extends AppCompatActivity {
                                 TextView textView = findViewById(R.id.textView);
                                 textView.setText("camera needs to be restarted to avoid instantaneous redetections of barcode, wait...\n"+detectedBarcodes);
                                 cameraSource.stop();
-
                             }
                         });
                         // TODO: The VIN should be read from the barcode in the future
-                        new DisassemblyService(Application.getContext()).startDisassembly("Random", new ServiceHelper.Listener<StartDisassemblyResponseMessage>() {
+                        new DisassemblyService(Application.getContext()).createDisassembly("Random", new ServiceHelper.Listener<CreateDisassemblyResponseMessage>() {
                             @Override
-                            public void onComplete(StartDisassemblyResponseMessage response) {
-                                if (response == null) {
+                            public void onComplete(CreateDisassemblyResponseMessage response) {
+                                if (response.disassembly == null) {
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
@@ -179,17 +172,10 @@ public class BarcodeReaderActivity extends AppCompatActivity {
                                         }
                                     });
                                 } else {
-                                    final int planId = response.planId;
-                                    final int disassemblyId = response.disassemblyId;
-                                    new PlanService(Application.getContext()).getPlan(planId, new ServiceHelper.Listener<GetPlanResponseMessage>() {
-                                        @Override
-                                        public void onComplete(GetPlanResponseMessage o) {
-                                            Intent intent = new Intent(BarcodeReaderActivity.this, DisassemblyActivity.class);
-                                            intent.putExtra("currentPlan", o.plan);
-                                            finish();
-                                            startActivity(intent);
-                                        }
-                                    });
+                                    Intent intent = new Intent(BarcodeReaderActivity.this, ChooseTasksActivity.class);
+                                    intent.putExtra("disassembly", response.disassembly);
+                                    finish();
+                                    startActivity(intent);
                                 }
                             }
                         });

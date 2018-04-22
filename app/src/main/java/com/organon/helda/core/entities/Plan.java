@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class Plan extends Entity implements Serializable {
+public class Plan extends Entity {
     private String model;
     private String locale;
     private List<Task> tasksWorkerA;

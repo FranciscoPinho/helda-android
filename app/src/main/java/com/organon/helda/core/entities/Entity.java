@@ -1,6 +1,8 @@
 package com.organon.helda.core.entities;
 
-public abstract class Entity {
+import java.io.Serializable;
+
+public abstract class Entity implements Serializable {
     private Integer id = null;
 
     public Integer getId() {
@@ -11,3 +13,4 @@ public abstract class Entity {
         this.id = id;
     }
 }
+

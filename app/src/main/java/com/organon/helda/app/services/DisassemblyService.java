@@ -1,6 +1,9 @@
 package com.organon.helda.app.services;
 
 import com.organon.helda.core.Context;
+import com.organon.helda.core.usecases.createdisassembly.CreateDisassembly;
+import com.organon.helda.core.usecases.createdisassembly.CreateDisassemblyRequestMessage;
+import com.organon.helda.core.usecases.createdisassembly.CreateDisassemblyResponseMessage;
 import com.organon.helda.core.usecases.startdisassembly.StartDisassembly;
 import com.organon.helda.core.usecases.startdisassembly.StartDisassemblyRequestMessage;
 import com.organon.helda.core.usecases.startdisassembly.StartDisassemblyResponseMessage;
@@ -12,13 +15,34 @@ public class DisassemblyService {
         this.context = context;
     }
 
-    public void startDisassembly(final String vin,
+    public void createDisassembly(final String vin,
+                                  final ServiceHelper.Listener<CreateDisassemblyResponseMessage> listener) {
+        new ServiceHelper(new ServiceHelper.Runnable() {
+            @Override
+            public Object run() {
+                CreateDisassemblyRequestMessage request = new CreateDisassemblyRequestMessage();
+                request.vin = vin;
+                CreateDisassembly interactor = new CreateDisassembly(context);
+                return interactor.handle(request);
+            }
+        }, new ServiceHelper.Listener() {
+            @Override
+            public void onComplete(Object o) {
+                CreateDisassemblyResponseMessage response = (CreateDisassemblyResponseMessage)o;
+                listener.onComplete(response);
+            }
+        }).execute();
+    }
+
+    public void startDisassembly(final int id,
+                                 final String worker,
                                  final ServiceHelper.Listener<StartDisassemblyResponseMessage> listener) {
         new ServiceHelper(new ServiceHelper.Runnable() {
             @Override
             public Object run() {
                 StartDisassemblyRequestMessage request = new StartDisassemblyRequestMessage();
-                request.vin = vin;
+                request.disassemblyId = id;
+                request.worker = worker;
                 StartDisassembly interactor = new StartDisassembly(context);
                 return interactor.handle(request);
             }

@@ -16,4 +16,6 @@
     <string name="register_anomaly">DESCRIBIR ANOMALÍA</string>
     <string name="registerText">En esa pantalla usted debe hacer el registro del problema que ocurrió. Puede hacerlo abajo escribindo o grabando su voz.</string>
     <string name="anomalia_registrada">ANOMALÍA REGISTRADA</string>
+    <string name="workerAButton">Operario A</string>
+    <string name="workerBButton">Operario B</string>
 </resources>

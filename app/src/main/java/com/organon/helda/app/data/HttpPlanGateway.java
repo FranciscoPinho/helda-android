@@ -21,6 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.organon.helda.app.utils.GatewayUtils.jsonToDate;
+import static com.organon.helda.app.utils.GatewayUtils.jsonToTaskList;
+
 public class HttpPlanGateway implements PlanGateway {
     @Override
     public Plan getPlan(int planId) {
@@ -55,31 +58,5 @@ public class HttpPlanGateway implements PlanGateway {
         catch (JSONException e) {
             throw new RuntimeException(e.getMessage());
         }
-    }
-
-    private Date jsonToDate(JSONObject datetime) throws JSONException {
-        JSONObject date = datetime.getJSONObject("date");
-        JSONObject time = datetime.getJSONObject("time");
-        return new Date(date.getInt("year"),
-                date.getInt("month"),
-                date.getInt("day"),
-                time.getInt("hour"),
-                time.getInt("minute"),
-                time.getInt("second"));
-    }
-
-    private List<Task> jsonToTaskList(JSONArray tasks) throws JSONException {
-        List<Task> result = new ArrayList<>();
-        for (int i = 0; i < tasks.length(); ++i) {
-            JSONObject task = tasks.getJSONObject(i);
-
-            String descripton = task.getString("description");
-            int duration = task.getInt("duration");
-
-            result.add(new Task()
-                    .setDescription(descripton)
-                    .setDuration(duration));
-        }
-        return result;
     }
 }

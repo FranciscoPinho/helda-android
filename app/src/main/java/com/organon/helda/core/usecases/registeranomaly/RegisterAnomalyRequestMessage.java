@@ -12,6 +12,5 @@ public class RegisterAnomalyRequestMessage {
     public String description;
     public int task;
     public Utils.State state;
-    public int plan;
 }
 

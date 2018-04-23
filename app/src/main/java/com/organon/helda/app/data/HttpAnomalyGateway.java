@@ -22,13 +22,12 @@ import java.util.Map;
 public class HttpAnomalyGateway implements AnomalyGateway {
 
 
-    public int insertAnomaly(int disassembly, int plan, String anomalyDate, String description, int task, Utils.State state){
+    public int insertAnomaly(int disassembly, String anomalyDate, String description, int task, Utils.State state){
         Map<String, String> params = new HashMap<>();
         params.put("disassembly", String.valueOf(disassembly));
         params.put("description", description);
         params.put("anomalydate", anomalyDate);
         params.put("task", String.valueOf(task));
-        params.put("plan", String.valueOf(plan));
         params.put("state", String.valueOf(state));
 
         NetworkManager networkManager = NetworkManager.getInstance();

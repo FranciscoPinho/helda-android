@@ -200,7 +200,8 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         Button paradaButton = findViewById(R.id.paradaButton);
         paradaButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-
+                if(repeatTTS.isSpeaking())
+                    repeatTTS.stop();
                 pauseDialog.setContentView(R.layout.activity_pause);
 
                 pause = true;
@@ -227,6 +228,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                         taskChronometer.setBase(taskChronometer.getBase() + SystemClock.elapsedRealtime() - pauseInitialTime);
                         pauseInitialTime = 0;
                         taskChronometer.start();
+                        repeatTTS.speak(getCurrentTask().getDescription(), TextToSpeech.QUEUE_FLUSH, null);
 
                         pauseDialog.dismiss();
                         pause = false;

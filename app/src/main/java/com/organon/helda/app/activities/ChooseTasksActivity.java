@@ -58,7 +58,6 @@ public class ChooseTasksActivity extends AppCompatActivity {
                     intent.putExtra("worker", worker);
                     intent.putExtra("currentPlan", o.plan);
                     intent.putExtra("disassemblyID", disassembly.getId());
-                    System.out.println("CHOOSE TASK ID: " + disassembly.getId());
                     finish();
                     startActivity(intent);
                 }

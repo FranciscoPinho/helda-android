@@ -1,7 +1,9 @@
-package com.organon.helda.core.usecases.uploadrecording;
+package com.organon.helda.core.usecases.uploadRecording;
 
 import com.organon.helda.core.usecases.ErrorCode;
 import com.organon.helda.core.usecases.RequestHandler;
+
+import java.net.URLConnection;
 
 public class UploadRecording extends RequestHandler<UploadRecordingRequestMessage,UploadRecordingResponseMessage> {
     

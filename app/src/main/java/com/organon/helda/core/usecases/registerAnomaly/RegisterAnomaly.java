@@ -1,4 +1,6 @@
-package com.organon.helda.core.usecases.registeranomaly;
+package com.organon.helda.core.usecases.registerAnomaly;
+
+import android.content.Context;
 
 import com.organon.helda.core.usecases.ErrorCode;
 import com.organon.helda.core.usecases.RequestHandler;

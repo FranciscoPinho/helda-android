@@ -29,13 +29,17 @@ import android.widget.TextView;
 import android.widget.Chronometer;
 
 import com.organon.helda.R;
+import com.organon.helda.app.data.HttpTaskTimeGateway;
 import com.organon.helda.app.data.NetworkManager;
 import com.organon.helda.app.fragments.SettingsFragment;
 import com.organon.helda.app.utils.Utils;
+import com.organon.helda.app.services.TaskTimeService;
+
 import com.organon.helda.core.entities.Plan;
 import com.organon.helda.core.entities.Task;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.io.IOException;
@@ -78,6 +82,8 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
     private long pauseInitialTime = 0;
 
     private boolean pause = false;
+
+    private List<Integer> taskTimeList = new ArrayList<Integer>();;
 
 
     @Override
@@ -135,12 +141,33 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         Button listoButton = findViewById(R.id.listoButton);
         listoButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                //to see a string representation of the plan currently in this activity
 
+                taskChronometer.stop();
+
+                //Task time in miliseconds
+                int taskTimeMiliss = (int) (SystemClock.elapsedRealtime() - taskChronometer.getBase());
+                taskTimeList.add(task, taskTimeMiliss);
+
+                //at the end of the tasks, store all timetasks in database
+                if(task == (tasks.size() - 1)){
+                    int aux = 0;
+                    while(aux <= task){
+                        TaskTimeService.insertTaskTime(1, (aux+1), taskTimeList.get(aux), new HttpTaskTimeGateway(), new TaskTimeService.Listener() {
+                            @Override
+                            public void onComplete(Object response) {
+                                if (response == null) {
+                                    TextView textView = findViewById(R.id.textView3);
+                                    textView.setText("Erro en registro del tiempo de la tarea");
+                                }
+                            }
+                        });
+                        aux++;
+                    }
+
+                }
                 task++;
                 String planStr = getCurrentTask().getDescription();
 
-                taskChronometer.stop();
                 //Reset and Start chronometer for new task
                 taskChronometer.setBase(SystemClock.elapsedRealtime());
                 taskChronometer.start();

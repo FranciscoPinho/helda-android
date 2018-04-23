@@ -145,10 +145,15 @@ public class AnomalyActivity extends AppCompatActivity {
         mRecorder.setOnInfoListener(new MediaRecorder.OnInfoListener() {
             @Override
             public void onInfo(MediaRecorder mr, int what, int extra) {
-                if(what==MediaRecorder.MEDIA_RECORDER_ERROR_UNKNOWN){
-                    File recording = new File(mFileName);
-                    if(recording.exists())
-                        recording.delete();
+                File recording = new File(mFileName);
+                switch(what){
+                    case MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED:
+                        recordAnomalyButton.performClick();
+                        break;
+                    case MediaRecorder.MEDIA_RECORDER_ERROR_UNKNOWN:
+                        if(recording.exists())
+                            recording.delete();
+                        break;
                 }
             }
         });
@@ -156,6 +161,7 @@ public class AnomalyActivity extends AppCompatActivity {
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         mRecorder.setOutputFile(mFileName);
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        mRecorder.setMaxDuration(60000);
 
         try {
             mRecorder.prepare();

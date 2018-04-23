@@ -5,12 +5,12 @@ import android.os.health.SystemHealthManager;
 import com.organon.helda.app.utils.Utils;
 import com.organon.helda.core.Context;
 import com.organon.helda.core.gateways.AnomalyGateway;
-import com.organon.helda.core.usecases.registeranomaly.RegisterAnomaly;
-import com.organon.helda.core.usecases.registeranomaly.RegisterAnomalyRequestMessage;
-import com.organon.helda.core.usecases.registeranomaly.RegisterAnomalyResponseMessage;
-import com.organon.helda.core.usecases.uploadrecording.UploadRecording;
-import com.organon.helda.core.usecases.uploadrecording.UploadRecordingRequestMessage;
-import com.organon.helda.core.usecases.uploadrecording.UploadRecordingResponseMessage;
+import com.organon.helda.core.usecases.registerAnomaly.RegisterAnomaly;
+import com.organon.helda.core.usecases.registerAnomaly.RegisterAnomalyRequestMessage;
+import com.organon.helda.core.usecases.registerAnomaly.RegisterAnomalyResponseMessage;
+import com.organon.helda.core.usecases.uploadRecording.UploadRecording;
+import com.organon.helda.core.usecases.uploadRecording.UploadRecordingRequestMessage;
+import com.organon.helda.core.usecases.uploadRecording.UploadRecordingResponseMessage;
 
 import java.io.File;
 

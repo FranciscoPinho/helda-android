@@ -1,4 +1,4 @@
-package com.organon.helda.core.usecases.uploadrecording;
+package com.organon.helda.core.usecases.uploadRecording;
 
 import java.io.File;
 

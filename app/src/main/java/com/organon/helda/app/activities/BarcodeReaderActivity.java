@@ -41,6 +41,7 @@ public class BarcodeReaderActivity extends AppCompatActivity {
     SurfaceView cameraView;
     SurfaceHolder cameraHolder;
     String detectedBarcodes;
+    String vin = "";
     Boolean connectivity;
 
 
@@ -140,43 +141,52 @@ public class BarcodeReaderActivity extends AppCompatActivity {
                 final SparseArray<Barcode> barcodes = detections.getDetectedItems();
                 if (barcodes.size() > 0) {
                     for(int i=0; i<barcodes.size();i++){
-                       detectedBarcodes = "Barcode "+i+": "+barcodes.valueAt(i).rawValue+"\n";
+                        if(barcodes.valueAt(i).rawValue.length()==8){
+                            vin = barcodes.valueAt(i).rawValue;
+                            detectedBarcodes = "Barcode "+i+": "+barcodes.valueAt(i).rawValue;
+                        }
                     }
 
                     if(connectivity) {
-                        runOnUiThread(new Runnable() {
+
+                        if(vin!="") {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    cameraSource.stop();
+                                    Toast.makeText(BarcodeReaderActivity.this, detectedBarcodes, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            new DisassemblyService(Application.getContext()).createDisassembly(vin, new ServiceHelper.Listener<CreateDisassemblyResponseMessage>() {
+                                @Override
+                                public void onComplete(CreateDisassemblyResponseMessage response) {
+                                    if (response.disassembly == null) {
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                try {
+                                                    if (ContextCompat.checkSelfPermission(BarcodeReaderActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
+                                                        cameraSource.start(cameraView.getHolder());
+                                                } catch (IOException e) {
+                                                    e.printStackTrace();
+                                                }
+                                                TextView textView = findViewById(R.id.textView);
+                                                textView.setText("detecciones activas de nuevo");
+                                            }
+                                        });
+                                    } else {
+                                        Intent intent = new Intent(BarcodeReaderActivity.this, ChooseTasksActivity.class);
+                                        intent.putExtra("disassembly", response.disassembly);
+                                        finish();
+                                        startActivity(intent);
+                                    }
+                                }
+                            });
+                        }
+                        else runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                TextView textView = findViewById(R.id.textView);
-                                textView.setText("camera needs to be restarted to avoid instantaneous redetections of barcode, wait...\n"+detectedBarcodes);
-                                cameraSource.stop();
-                            }
-                        });
-                        // TODO: The VIN should be read from the barcode in the future
-                        new DisassemblyService(Application.getContext()).createDisassembly("Random", new ServiceHelper.Listener<CreateDisassemblyResponseMessage>() {
-                            @Override
-                            public void onComplete(CreateDisassemblyResponseMessage response) {
-                                if (response.disassembly == null) {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            try {
-                                                if (ContextCompat.checkSelfPermission(BarcodeReaderActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
-                                                    cameraSource.start(cameraView.getHolder());
-                                            }
-                                            catch(IOException e){
-                                                e.printStackTrace();
-                                            }
-                                            TextView textView = findViewById(R.id.textView);
-                                            textView.setText("detecciones activas de nuevo");
-                                        }
-                                    });
-                                } else {
-                                    Intent intent = new Intent(BarcodeReaderActivity.this, ChooseTasksActivity.class);
-                                    intent.putExtra("disassembly", response.disassembly);
-                                    finish();
-                                    startActivity(intent);
-                                }
+                                Toast.makeText(BarcodeReaderActivity.this, R.string.noVin, Toast.LENGTH_SHORT).show();
                             }
                         });
                     }

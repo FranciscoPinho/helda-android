@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Chronometer;
 
 import com.organon.helda.R;
+import com.organon.helda.app.HeldaApp;
 import com.organon.helda.app.data.HttpTaskTimeGateway;
 import com.organon.helda.app.data.NetworkManager;
 import com.organon.helda.app.services.TaskTimeService;
@@ -75,7 +76,9 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
     private boolean pause = false;
 
-    private List<Integer> taskTimeList = new ArrayList<Integer>();;
+    private List<Integer> taskTimeList = new ArrayList<Integer>();
+
+    private HeldaApp app;
 
 
     @Override
@@ -83,6 +86,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_disassembly);
         pauseDialog = new Dialog(this);
+        app = (HeldaApp) getApplication();
 
         taskChronometer = findViewById(R.id.taskChronometer);
 
@@ -238,6 +242,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
             }
         });
     }
+
     @Override
     public void onResume(){
         super.onResume();
@@ -248,6 +253,16 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
             repeatTTS.setLanguage(new Locale("es", "ES"));
             new DisassemblyActivity.SetupTask(this).execute();
         }
+        switch (app.anomalyDecision) {
+            case "STOP":
+                findViewById(R.id.paradaButton).performClick();
+                break;
+            case "SKIP":
+                task = task+1;
+                break;
+        }
+
+        app.anomalyDecision="";
     }
     @Override
     public void onInit(int i) {

@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.organon.helda.R;
+import com.organon.helda.app.HeldaApp;
 import com.organon.helda.app.data.HttpAnomalyGateway;
 import com.organon.helda.app.services.AnomalyService;
 import com.organon.helda.app.services.AnomalyService.Listener;
@@ -29,10 +30,12 @@ public class AnomalyProcessActivity extends AppCompatActivity {
     private int task;
     private Button skipButton;
     private Button stopButton;
+    private HeldaApp app;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        app = (HeldaApp) getApplication();
         setContentView(R.layout.activity_anomaly_process);
         plan=(Plan)getIntent().getSerializableExtra("currentPlan");
         anomalyText = (String)getIntent().getSerializableExtra("anomalyText");
@@ -59,14 +62,8 @@ public class AnomalyProcessActivity extends AppCompatActivity {
                                 TextView textView = findViewById(R.id.textView3);
                                 textView.setText("Erro en registro del anomalía");
                             }
-
-                            Intent intent = new Intent(AnomalyProcessActivity.this, DisassemblyActivity.class);
-                            intent.putExtra("id", (int)response);
-                            intent.putExtra("task",task+1);
-                            intent.putExtra("currentPlan", plan);
+                            app.anomalyDecision = "SKIP";
                             finish();
-                            startActivity(intent);
-
                         }
                     });
                 }
@@ -86,11 +83,8 @@ public class AnomalyProcessActivity extends AppCompatActivity {
                                 TextView textView = findViewById(R.id.textView3);
                                 textView.setText("Erro en registro del anomalía");
                             }
-
-                            intent.putExtra("id", (int)response);
-                            intent.putExtra("currentPlan", plan);
+                            app.anomalyDecision = "STOP";
                             finish();
-                            startActivity(intent);
 
                         }
                     });

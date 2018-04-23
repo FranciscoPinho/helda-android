@@ -3,16 +3,14 @@ package com.organon.helda.app.activities;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import com.organon.helda.R;
-import com.organon.helda.app.Application;
+import com.organon.helda.app.HeldaApp;
 import com.organon.helda.app.services.DisassemblyService;
 import com.organon.helda.app.services.ServiceHelper;
 import com.organon.helda.core.entities.Disassembly;
-import com.organon.helda.core.entities.Plan;
 import com.organon.helda.core.usecases.startdisassembly.StartDisassemblyResponseMessage;
 
 public class ChooseTasksActivity extends AppCompatActivity {
@@ -51,7 +49,7 @@ public class ChooseTasksActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View view) {
-            new DisassemblyService(Application.getContext()).startDisassembly(disassembly.getId(), worker, new ServiceHelper.Listener<StartDisassemblyResponseMessage>() {
+            new DisassemblyService(HeldaApp.getContext()).startDisassembly(disassembly.getId(), worker, new ServiceHelper.Listener<StartDisassemblyResponseMessage>() {
                 @Override
                 public void onComplete(StartDisassemblyResponseMessage o) {
                     Intent intent = new Intent(ChooseTasksActivity.this, DisassemblyActivity.class);

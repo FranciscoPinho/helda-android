@@ -1,0 +1,27 @@
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/configsLabel">
+
+        <com.organon.helda.app.utils.EditTextPreference
+            android:key="serverIP"
+            android:title="@string/serveripLabel"
+            android:inputType="number"
+            android:digits="0123456789."
+            android:summary="%s"
+            android:dialogTitle="@string/serveripLabel" />
+
+        <com.organon.helda.app.utils.EditTextPreference
+            android:key="port"
+            android:title="@string/serverportLabel"
+            android:inputType="numberDecimal"
+            android:summary="%s"
+            android:dialogTitle="@string/serverportLabel" />
+
+
+    </PreferenceCategory>
+    <Preference android:title="Close"
+        android:key="closeFragment" />
+
+</PreferenceScreen>

@@ -3,20 +3,25 @@ package com.organon.helda.app.activities;
 import android.app.Dialog;
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.SystemClock;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -25,6 +30,8 @@ import android.widget.Chronometer;
 
 import com.organon.helda.R;
 import com.organon.helda.app.data.NetworkManager;
+import com.organon.helda.app.fragments.SettingsFragment;
+import com.organon.helda.app.utils.Utils;
 import com.organon.helda.core.entities.Plan;
 import com.organon.helda.core.entities.Task;
 
@@ -77,6 +84,9 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_disassembly);
+        Toolbar toolbar = findViewById(R.id.my_toolbar);
+        setSupportActionBar(toolbar);
+
         pauseDialog = new Dialog(this);
 
         taskChronometer = findViewById(R.id.taskChronometer);
@@ -402,5 +412,43 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
     private Task getCurrentTask() {
         return tasks.get(task);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.toolbar_menu_options, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            getFragmentManager().beginTransaction()
+                    .replace(android.R.id.content, new SettingsFragment())
+                    .addToBackStack("settings")
+                    .commit();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        int count = getFragmentManager().getBackStackEntryCount();
+        if (count == 0) {
+            super.onBackPressed();
+        } else {
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            Utils.resetSystemProperties(sharedPref);
+            getFragmentManager().popBackStack();
+        }
+
     }
 }

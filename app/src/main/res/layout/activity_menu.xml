@@ -7,42 +7,14 @@
     android:backgroundTint="@android:color/darker_gray"
     tools:context=".app.activities.MenuActivity">
 
-    <TextView
-        android:id="@+id/configLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="400dp"
-        android:text="@string/configsLabel"
-        android:fontFamily="monospace"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-        android:textSize="20sp"
-        android:typeface="normal"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/serveripLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="150dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:fontFamily="monospace"
-        android:text="@string/serveripLabel"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-        android:textSize="18sp"
-        android:typeface="normal"
-        app:layout_constraintBottom_toTopOf="@+id/scanStart"
-        app:layout_constraintEnd_toStartOf="@+id/serverIP"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/configLabel" />
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"/>
 
     <TextView
         android:id="@+id/errorText"
@@ -63,20 +35,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/scanStart" />
 
-    <EditText
-        android:id="@+id/serverIP"
-        android:layout_width="130dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:background="@null"
-        android:hint="ip"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toTopOf="@+id/scanStart"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.8"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/configLabel"
-        app:layout_constraintVertical_bias="0.165" />
     <Button
         android:id="@+id/scanStart"
         android:layout_width="wrap_content"

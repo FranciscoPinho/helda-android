@@ -1,6 +1,7 @@
 package com.organon.helda.app.utils;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 
 import java.io.BufferedReader;
@@ -14,11 +15,24 @@ public final class Utils {
     public enum State {stopped, skipped, solved}
 
     static private final String IPV4_REGEX = "(([0-1]?[0-9]{1,2}\\.)|(2[0-4][0-9]\\.)|(25[0-5]\\.)){3}(([0-1]?[0-9]{1,2})|(2[0-4][0-9])|(25[0-5]))";
+    static private final String PORT_REGEX = "(([0-9]{4,5}))";
+    static private Pattern PORT_PATTERN = Pattern.compile(PORT_REGEX);
     static private Pattern IPV4_PATTERN = Pattern.compile(IPV4_REGEX);
 
     public static boolean isValidIPV4(final String s)
     {
         return IPV4_PATTERN.matcher(s).matches();
+    }
+
+    public static boolean isValidPort(final String s){
+        return PORT_PATTERN.matcher(s).matches();
+    }
+
+    public static void resetSystemProperties(SharedPreferences sharedPref){
+        System.clearProperty("serverIP");
+        System.clearProperty("port");
+        System.setProperty("serverIP",sharedPref.getString("serverIP",""));
+        System.setProperty("port",sharedPref.getString("port",""));
     }
 
     public static String convertStreamToString(InputStream inputStream) throws IOException {

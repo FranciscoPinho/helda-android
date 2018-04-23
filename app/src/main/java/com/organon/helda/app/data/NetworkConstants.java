@@ -1,7 +1,7 @@
 package com.organon.helda.app.data;
 
 public class NetworkConstants {
-    public static final String BASE_URL = "http://"+System.getProperty("serverIP")+":4567/";
+    public static final String BASE_URL = "http://"+System.getProperty("serverIP")+":"+System.getProperty("port")+"/";
 
     public static final String REGISTER_ANOMALY = "anomaly/";
     public static final String UPLOAD_RECORDING = "anomaly/audio";

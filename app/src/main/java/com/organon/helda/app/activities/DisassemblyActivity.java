@@ -63,6 +63,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
     private Plan plan;
     private TextToSpeech repeatTTS;
+    private int disassemblyID;
 
     //Used to create a pop window when pause button is clicked
     private Dialog pauseDialog;
@@ -87,6 +88,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         taskChronometer = findViewById(R.id.taskChronometer);
 
         plan=(Plan)getIntent().getSerializableExtra("currentPlan");
+        disassemblyID = (int) getIntent().getSerializableExtra("disassemblyID");
         String worker = getIntent().getStringExtra("worker");
         if (worker.equals("A")) tasks = plan.getTasksWorkerA();
         if (worker.equals("B")) tasks = plan.getTasksWorkerB();
@@ -191,6 +193,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                   Intent anomalyActivity = new Intent(DisassemblyActivity.this, AnomalyActivity.class);
                   anomalyActivity.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                   anomalyActivity.putExtra("currentPlan", plan);
+                  anomalyActivity.putExtra("disassemblyID", disassemblyID);
                   anomalyActivity.putExtra("task", task);
                   startActivity(anomalyActivity);
               }

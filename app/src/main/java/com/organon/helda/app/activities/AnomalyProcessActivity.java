@@ -27,6 +27,7 @@ public class AnomalyProcessActivity extends AppCompatActivity {
     private String anomalyText;
     private Plan plan;
     private int task;
+    private int disassemblyID;
     private Button skipButton;
     private Button stopButton;
 
@@ -37,6 +38,7 @@ public class AnomalyProcessActivity extends AppCompatActivity {
         plan=(Plan)getIntent().getSerializableExtra("currentPlan");
         anomalyText = (String)getIntent().getSerializableExtra("anomalyText");
         task = (int)getIntent().getSerializableExtra("task");
+        disassemblyID = (int)getIntent().getSerializableExtra("disassemblyID");
 
         connectivity= Utils.isNetworkAvailable(this);
         connectivity_receiver= new BroadcastReceiver() {
@@ -52,7 +54,7 @@ public class AnomalyProcessActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(connectivity) {
                     String timestamp = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date());
-                    AnomalyService.insertAnomaly(1, 1,  String.valueOf(timestamp), anomalyText,task, Utils.State.skipped, new HttpAnomalyGateway(), new Listener() {
+                    AnomalyService.insertAnomaly(disassemblyID,  String.valueOf(timestamp), anomalyText,task, Utils.State.skipped, new HttpAnomalyGateway(), new Listener() {
                         @Override
                         public void onComplete(Object response) {
                             if (response == null) {
@@ -79,7 +81,7 @@ public class AnomalyProcessActivity extends AppCompatActivity {
                 final Intent intent = new Intent(AnomalyProcessActivity.this, BarcodeReaderActivity.class);
                 if(connectivity) {
                     String timestamp = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date());
-                    AnomalyService.insertAnomaly(1, 1,  String.valueOf(timestamp), anomalyText,task, Utils.State.stopped, new HttpAnomalyGateway(), new Listener() {
+                    AnomalyService.insertAnomaly(disassemblyID,  String.valueOf(timestamp), anomalyText,task, Utils.State.stopped, new HttpAnomalyGateway(), new Listener() {
                         @Override
                         public void onComplete(Object response) {
                             if (response == null) {

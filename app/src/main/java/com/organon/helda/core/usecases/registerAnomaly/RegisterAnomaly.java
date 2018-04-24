@@ -36,7 +36,7 @@ public class RegisterAnomaly extends RequestHandler<RegisterAnomalyRequestMessag
 
     @Override
     protected RegisterAnomalyResponseMessage onValid(RegisterAnomalyRequestMessage request) {
-        int id = context.anomalyGateway.insertAnomaly(1, 1, request.anomalyDate, request.description, 1, request.state);
+        int id = context.anomalyGateway.insertAnomaly(request.disassembly, request.anomalyDate, request.description, request.task, request.state);
         RegisterAnomalyResponseMessage response = new RegisterAnomalyResponseMessage();
         response.id = id;
         return response;

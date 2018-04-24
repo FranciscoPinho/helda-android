@@ -6,6 +6,6 @@ import java.io.File;
 
 public interface AnomalyGateway {
 
-    int insertAnomaly(int disassembly, int plan, String anomaly_date, String description, int task, Utils.State state);
+    int insertAnomaly(int disassembly, String anomaly_date, String description, int task, Utils.State state);
     Boolean sendRecording(File payload, int disassembly);
 }

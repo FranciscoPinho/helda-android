@@ -35,6 +35,7 @@ public class AnomalyActivity extends AppCompatActivity {
     private Boolean connectivity;
     private Plan plan;
     private Integer task;
+    private Integer disassemblyID;
     private MediaRecorder mRecorder = null;
     boolean mStartRecording = true;
     private static String mFileName = null;
@@ -49,6 +50,7 @@ public class AnomalyActivity extends AppCompatActivity {
         setContentView(R.layout.activity_anomaly);
         plan=(Plan)getIntent().getSerializableExtra("currentPlan");
         task=(Integer)getIntent().getSerializableExtra("task");
+        disassemblyID=(int)getIntent().getSerializableExtra("disassemblyID");
         connectivity= Utils.isNetworkAvailable(this);
         connectivity_receiver= new BroadcastReceiver() {
             @Override
@@ -131,6 +133,7 @@ public class AnomalyActivity extends AppCompatActivity {
         String anomaly = anomalyText.getText().toString();
         Intent intent = new Intent(AnomalyActivity.this, AnomalyProcessActivity.class);
         intent.putExtra("anomalyText", anomaly);
+        intent.putExtra("disassemblyID", disassemblyID);
         intent.putExtra("currentPlan", plan);
         intent.putExtra("task", task);
         finish();

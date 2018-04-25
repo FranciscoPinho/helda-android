@@ -158,6 +158,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                     }
 
                 }
+                tasks.get(task).done();
                 task++;
                 String planStr = getCurrentTask().getDescription();
 
@@ -174,6 +175,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
             public void onClick(View v) {
                 if (task != 0) {
                     task--;
+                    tasks.get(task).resumed();
                 }
                 String planStr = getCurrentTask().getDescription();
 
@@ -258,6 +260,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 findViewById(R.id.paradaButton).performClick();
                 break;
             case "SKIP":
+                tasks.get(task).skiped();
                 task = task+1;
                 break;
         }

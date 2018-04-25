@@ -62,6 +62,7 @@ public class AnomalyProcessActivity extends AppCompatActivity {
                                 TextView textView = findViewById(R.id.textView3);
                                 textView.setText("Erro en registro del anomalía");
                             }
+                            app.task = task;
                             app.anomalyDecision = "SKIP";
                             finish();
                         }
@@ -83,6 +84,7 @@ public class AnomalyProcessActivity extends AppCompatActivity {
                                 TextView textView = findViewById(R.id.textView3);
                                 textView.setText("Erro en registro del anomalía");
                             }
+                            app.task = task;
                             app.anomalyDecision = "STOP";
                             finish();
 

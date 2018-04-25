@@ -10,6 +10,8 @@ import com.organon.helda.core.Context;
 
 public class HeldaApp extends Application {
     public String anomalyDecision = "";
+    public int task = 0;
+
     private static Context context;
 
     public static Context getContext() {

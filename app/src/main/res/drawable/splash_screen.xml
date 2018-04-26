@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:gravity="center"
+        android:layout_height="@dimen/cast_mini_controller_icon_height"
+        android:layout_width="@dimen/cast_mini_controller_icon_width"
+        android:height="@dimen/cast_mini_controller_icon_width"
+        android:width="@dimen/cast_mini_controller_icon_width">
+        <bitmap
+            android:gravity="fill|fill_vertical|fill_horizontal"
+            android:src="@drawable/peugeot_logo" />
+    </item>
+</layer-list>

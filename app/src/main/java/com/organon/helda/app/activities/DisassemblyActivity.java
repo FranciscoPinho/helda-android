@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Chronometer;
 
 import com.organon.helda.R;
+import com.organon.helda.app.HeldaApp;
 import com.organon.helda.app.data.HttpTaskTimeGateway;
 import com.organon.helda.app.data.NetworkManager;
 import com.organon.helda.app.fragments.SettingsFragment;
@@ -84,7 +85,9 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
     private boolean pause = false;
 
-    private List<Integer> taskTimeList = new ArrayList<Integer>();;
+    private List<Integer> taskTimeList = new ArrayList<Integer>();
+
+    private HeldaApp app;
 
 
     @Override
@@ -95,6 +98,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         setSupportActionBar(toolbar);
 
         pauseDialog = new Dialog(this);
+        app = (HeldaApp) getApplication();
 
         taskChronometer = findViewById(R.id.taskChronometer);
 
@@ -167,6 +171,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                     }
 
                 }
+                tasks.get(task).done();
                 task++;
                 String planStr = getCurrentTask().getDescription();
 
@@ -183,6 +188,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
             public void onClick(View v) {
                 if (task != 0) {
                     task--;
+                    tasks.get(task).resumed();
                 }
                 String planStr = getCurrentTask().getDescription();
 
@@ -254,6 +260,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
             }
         });
     }
+
     @Override
     public void onResume(){
         super.onResume();
@@ -264,6 +271,17 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
             repeatTTS.setLanguage(new Locale("es", "ES"));
             new DisassemblyActivity.SetupTask(this).execute();
         }
+        switch (app.anomalyDecision) {
+            case "STOP":
+                findViewById(R.id.paradaButton).performClick();
+                break;
+            case "SKIP":
+                tasks.get(task).skipped();
+                task = task+1;
+                break;
+        }
+
+        app.anomalyDecision="";
     }
     @Override
     public void onInit(int i) {

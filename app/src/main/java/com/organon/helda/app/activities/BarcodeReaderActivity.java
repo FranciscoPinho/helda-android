@@ -21,7 +21,7 @@ import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
-import com.organon.helda.app.Application;
+import com.organon.helda.app.HeldaApp;
 import com.organon.helda.app.data.NetworkManager;
 import com.organon.helda.app.services.DisassemblyService;
 import com.organon.helda.app.services.ServiceHelper;
@@ -157,7 +157,7 @@ public class BarcodeReaderActivity extends AppCompatActivity {
                                     Toast.makeText(BarcodeReaderActivity.this, detectedBarcodes, Toast.LENGTH_SHORT).show();
                                 }
                             });
-                            new DisassemblyService(Application.getContext()).createDisassembly(vin, new ServiceHelper.Listener<CreateDisassemblyResponseMessage>() {
+                            new DisassemblyService(HeldaApp.getContext()).createDisassembly(vin, new ServiceHelper.Listener<CreateDisassemblyResponseMessage>() {
                                 @Override
                                 public void onComplete(CreateDisassemblyResponseMessage response) {
                                     if (response.disassembly == null) {

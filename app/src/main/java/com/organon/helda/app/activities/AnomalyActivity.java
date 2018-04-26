@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.organon.helda.R;
+import com.organon.helda.app.HeldaApp;
 import com.organon.helda.app.data.HttpAnomalyGateway;
 import com.organon.helda.app.services.AnomalyService;
 import com.organon.helda.app.utils.Utils;
@@ -66,6 +67,8 @@ public class AnomalyActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
         anomalyText = findViewById(R.id.AnomaliaInputText);
         setupRecordingButtonListeners();
+
+        HeldaApp app = new HeldaApp();
 
     }
 

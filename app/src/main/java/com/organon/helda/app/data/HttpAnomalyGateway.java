@@ -26,7 +26,6 @@ public class HttpAnomalyGateway implements AnomalyGateway {
         Map<String, String> params = new HashMap<>();
         params.put("disassembly", String.valueOf(disassembly));
         params.put("description", description);
-        params.put("anomalydate", anomalyDate);
         params.put("task", String.valueOf(task));
         params.put("state", String.valueOf(state));
 

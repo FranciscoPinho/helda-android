@@ -260,7 +260,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 findViewById(R.id.paradaButton).performClick();
                 break;
             case "SKIP":
-                tasks.get(task).skiped();
+                tasks.get(task).skipped();
                 task = task+1;
                 break;
         }

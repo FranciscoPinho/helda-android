@@ -39,7 +39,7 @@ public class Task extends Entity implements Serializable{
     public int getState() {
         return state;
     }
-    public void skiped() {
+    public void skipped() {
         state = STATE_SKIPPED;
     }
     public void resumed() {

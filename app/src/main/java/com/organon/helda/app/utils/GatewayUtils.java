@@ -28,11 +28,9 @@ public class GatewayUtils {
             JSONObject task = tasks.getJSONObject(i);
 
             String descripton = task.getString("description");
-            int duration = task.getInt("duration");
 
             result.add(new Task()
-                    .setDescription(descripton)
-                    .setDuration(duration));
+                    .setDescription(descripton));
         }
         return result;
     }

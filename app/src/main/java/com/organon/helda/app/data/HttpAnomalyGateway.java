@@ -29,7 +29,7 @@ public class HttpAnomalyGateway implements AnomalyGateway {
         params.put("task", String.valueOf(task));
         params.put("state", String.valueOf(state));
         // TODO: Use the actual worker ID once login is implemented
-        params.put("worker", String.valueOf(1));
+        params.put("worker", "1");
 
         NetworkManager networkManager = NetworkManager.getInstance();
         JSONObject res = networkManager.postSync(NetworkConstants.BASE_URL + NetworkConstants.REGISTER_ANOMALY, params);
@@ -54,10 +54,9 @@ public class HttpAnomalyGateway implements AnomalyGateway {
 
     public Boolean sendRecording(final File payload, final int disassembly){
         Map<String, String> params = new HashMap<>();
-        params.put("disassembly", String.valueOf(disassembly));
         params.put("filename",payload.getName());
         NetworkManager networkManager = NetworkManager.getInstance();
-        JSONObject res = networkManager.getSyncRecordingUpload(NetworkConstants.BASE_URL + NetworkConstants.UPLOAD_RECORDING, payload, params);
+        JSONObject res = networkManager.getSyncRecordingUpload(NetworkConstants.BASE_URL + String.format(NetworkConstants.UPLOAD_RECORDING,disassembly), payload, params);
         if (res == null) {
             return null;
         }

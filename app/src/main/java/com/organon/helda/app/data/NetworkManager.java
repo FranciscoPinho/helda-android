@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.NoConnectionError;
@@ -76,7 +77,14 @@ public class NetworkManager
 
     public JSONObject postSync(String url, Map<String, String> params) {
         RequestFuture<JSONObject> future = RequestFuture.newFuture();
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params), future, future);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params), future, future){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=utf-8");
+                return headers;
+            }
+        };
         requestQueue.add(request);
         try {
             return future.get(NetworkConstants.TIMEOUT, TimeUnit.SECONDS);

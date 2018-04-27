@@ -21,7 +21,7 @@
 
 
     </PreferenceCategory>
-    <Preference android:title="Close"
+    <Preference android:title="Cerca"
         android:key="closeFragment" />
 
 </PreferenceScreen>

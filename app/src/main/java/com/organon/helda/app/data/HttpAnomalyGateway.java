@@ -28,6 +28,8 @@ public class HttpAnomalyGateway implements AnomalyGateway {
         params.put("description", description);
         params.put("task", String.valueOf(task));
         params.put("state", String.valueOf(state));
+        // TODO: Use the actual worker ID once login is implemented
+        params.put("worker", String.valueOf(1));
 
         NetworkManager networkManager = NetworkManager.getInstance();
         JSONObject res = networkManager.postSync(NetworkConstants.BASE_URL + NetworkConstants.REGISTER_ANOMALY, params);

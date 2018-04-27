@@ -23,6 +23,7 @@ public class MenuActivity extends AppCompatActivity {
     SharedPreferences sharedPref;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.Theme_AppCompat_NoActionBar);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
         Toolbar toolbar = findViewById(R.id.my_toolbar);

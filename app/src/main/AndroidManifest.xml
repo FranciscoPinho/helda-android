@@ -13,9 +13,9 @@
     <application
         android:name=".app.HeldaApp"
         android:allowBackup="false"
-        android:icon="@drawable/icon"
+        android:icon="@mipmap/ic_launcher_black"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme.NoActionBar">
+        android:theme="@style/AppTheme.SplashTheme">
         <activity
             android:name=".app.activities.BarcodeReaderActivity"
             android:label="@string/app_name_short"
@@ -26,8 +26,7 @@
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".app.activities.MenuActivity"
-            android:label="@string/app_name_short"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
+            android:label="@string/app_name_short" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

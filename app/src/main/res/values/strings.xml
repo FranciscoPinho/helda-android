@@ -16,6 +16,8 @@
     <string name="anomalia_registrada">ANOMALÍA REGISTRADA</string>
     <string name="workerAButton">Operario A</string>
     <string name="workerBButton">Operario B</string>
+    <string name="simpleModeOption">Sencillo</string>
+    <string name="detailedModeOption">Detallado</string>
 
     <string name="configsLabel">Configuraciones del Servidor:</string>
     <string name="serveripLabel">IP servidor</string>

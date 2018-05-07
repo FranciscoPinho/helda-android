@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +28,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Chronometer;
+import android.widget.ViewSwitcher;
 
 import com.organon.helda.R;
 import com.organon.helda.app.HeldaApp;
@@ -57,14 +59,14 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
     /* Named searches allow to quickly reconfigure the decoder */
     private static final String KWS_SEARCH = "keywords";
     private static final String KWS_NEXT = "adelante";
-    private static final String KWS_REVERT = "retroceder";
+    private static final String KWS_REVERT = "regresar";
     private static final String KWS_PAUSE = "detener";
     private static final String KWS_STOP_PAUSE = "reanudar";
     private static final String KWS_ANOMALY = "anomalia";
+    private static final int SIMPLE_MENU_OPTION_ID = 1;
 
     /* Used to handle permission request */
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
-
     private SpeechRecognizer recognizer;
 
     private List<Task> tasks;
@@ -89,14 +91,20 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
     private HeldaApp app;
 
+    private static ViewSwitcher viewSwitcher;
+    private static ConstraintLayout detailedView;
+    private static ConstraintLayout simpleView;
+    MenuItem modeChangeItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_disassembly);
-        Toolbar toolbar = findViewById(R.id.my_toolbar);
+        final Toolbar toolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(toolbar);
-
+        viewSwitcher =   findViewById(R.id.viewSwitcher);
+        detailedView= findViewById(R.id.detailedMode);
+        simpleView = findViewById(R.id.simpleMode);
         pauseDialog = new Dialog(this);
         app = (HeldaApp) getApplication();
 
@@ -143,8 +151,8 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         });
 
         taskViewer.setGravity(Gravity.CENTER);
-
-        Button listoButton = findViewById(R.id.listoButton);
+        Button simpleListo = findViewById(R.id.simpleListoButton);
+        final Button listoButton = findViewById(R.id.listoButton);
         listoButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
 
@@ -183,6 +191,14 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
             }
         });
+
+        simpleListo.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listoButton.performClick();
+            }
+        });
+
         Button atrasButton = findViewById(R.id.atrasButton);
         atrasButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
@@ -220,6 +236,10 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         Button paradaButton = findViewById(R.id.paradaButton);
         paradaButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
+                if (viewSwitcher.getCurrentView() != detailedView) {
+                    viewSwitcher.showPrevious();
+                    modeChangeItem.setTitle(R.string.simpleModeOption);
+                }
                 if(repeatTTS.isSpeaking())
                     repeatTTS.stop();
                 pauseDialog.setContentView(R.layout.activity_pause);
@@ -466,8 +486,8 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.toolbar_menu_options, menu);
+        modeChangeItem=menu.add(0,SIMPLE_MENU_OPTION_ID,0,R.string.simpleModeOption);
+        modeChangeItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         return true;
     }
 
@@ -482,6 +502,17 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                     .replace(android.R.id.content, new SettingsFragment())
                     .addToBackStack("settings")
                     .commit();
+            return true;
+        }
+        if (id == SIMPLE_MENU_OPTION_ID){
+            if (viewSwitcher.getCurrentView() != detailedView){
+                item.setTitle(R.string.simpleModeOption);
+                viewSwitcher.showPrevious();
+            } else if (viewSwitcher.getCurrentView() != simpleView){
+                item.setTitle(R.string.detailedModeOption);
+                viewSwitcher.showNext();
+            }
+
             return true;
         }
 

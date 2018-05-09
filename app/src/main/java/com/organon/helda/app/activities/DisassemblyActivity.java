@@ -153,6 +153,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         taskViewer.setGravity(Gravity.CENTER);
         Button simpleListo = findViewById(R.id.simpleListoButton);
         final Button listoButton = findViewById(R.id.listoButton);
+        listoButton.setText(KWS_NEXT);
         listoButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
 
@@ -200,6 +201,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         });
 
         Button atrasButton = findViewById(R.id.atrasButton);
+        atrasButton.setText(KWS_REVERT);
         atrasButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 if (task != 0) {
@@ -218,6 +220,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         });
 
         Button anomaliaButton = findViewById(R.id.anomaliaButton);
+        anomaliaButton.setText(KWS_ANOMALY);
         anomaliaButton.setOnClickListener(new OnClickListener() {
               public void onClick(View v) {
                   repeatTTS.stop();
@@ -234,6 +237,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
               
         Button paradaButton = findViewById(R.id.paradaButton);
+        paradaButton.setText(KWS_PAUSE);
         paradaButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 if (viewSwitcher.getCurrentView() != detailedView) {
@@ -251,6 +255,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
                 Button backButton;
                 backButton = (Button) pauseDialog.findViewById(R.id.reanudarButton);
+                backButton.setText(KWS_STOP_PAUSE);
 
                 pauseChronometer = (Chronometer) pauseDialog.findViewById(R.id.pauseChronometer);
 

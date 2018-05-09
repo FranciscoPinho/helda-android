@@ -1,8 +1,9 @@
 package com.organon.helda.core.usecases.completedisassembly;
 
-/**
- * Created by marga on 5/9/2018.
- */
+import com.organon.helda.core.entities.Disassembly;
+import com.organon.helda.core.usecases.ResponseMessage;
 
-public class CompleteDisassemblyResponseMessage {
+
+public class CompleteDisassemblyResponseMessage extends ResponseMessage<CompleteDisassemblyResponseMessage> {
+    public Disassembly disassembly;
 }

@@ -1,6 +1,9 @@
 package com.organon.helda.app.services;
 
 import com.organon.helda.core.Context;
+import com.organon.helda.core.usecases.completedisassembly.CompleteDisassembly;
+import com.organon.helda.core.usecases.completedisassembly.CompleteDisassemblyRequestMessage;
+import com.organon.helda.core.usecases.completedisassembly.CompleteDisassemblyResponseMessage;
 import com.organon.helda.core.usecases.createdisassembly.CreateDisassembly;
 import com.organon.helda.core.usecases.createdisassembly.CreateDisassemblyRequestMessage;
 import com.organon.helda.core.usecases.createdisassembly.CreateDisassemblyResponseMessage;
@@ -54,4 +57,25 @@ public class DisassemblyService {
             }
         }).execute();
     }
+
+    public void completeDisassembly(final int id, final String worker, final ServiceHelper.Listener<CompleteDisassemblyResponseMessage> listener) {
+        new ServiceHelper(new ServiceHelper.Runnable() {
+            @Override
+            public Object run() {
+                CompleteDisassemblyRequestMessage request = new CompleteDisassemblyRequestMessage();
+                request.disassemblyId = id;
+                request.worker = worker;
+                CompleteDisassembly interactor = new CompleteDisassembly(context);
+                return interactor.handle(request);
+            }
+        }, new ServiceHelper.Listener() {
+            @Override
+            public void onComplete(Object o) {
+                CompleteDisassemblyResponseMessage response = (CompleteDisassemblyResponseMessage)o;
+                listener.onComplete(response);
+            }
+        }).execute();
+    }
+
+
 }

@@ -1,8 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="app_name">Helda Prototype</string>
-    <string name="kws_caption">To start demonstration say \"listo\".</string>
-    <string name="helda_caption">Good job! Say \"volver\" to go back</string>
+    <string name="app_name">Helpful Disassembly Assistant</string>
+    <string name="app_name_short">HELDA</string>
+    <string name="scanButton">Escanear código de barras</string>
     <string name="testButton">listo</string>
     <string name="testText">Awaiting task</string>
+    <string name="title_activity_barcode_reader">BarcodeReaderActivity</string>
+    <string name="anomalia">Anomalia</string>
+    <string name="parada">Parada</string>
+    <string name="atrás">atrás</string>
+    <string name="noConnection">Por favor, compruebe la conexión y vuelva a intentarlo</string>
+    <string name="noVin">Por favor, escanear el vin</string>
+    <string name="register_anomaly">DESCRIBIR ANOMALÍA</string>
+    <string name="registerText">En esa pantalla usted debe hacer el registro del problema que ocurrió. Puede hacerlo abajo escribindo o grabando su voz.</string>
+    <string name="anomalia_registrada">ANOMALÍA REGISTRADA</string>
+    <string name="workerAButton">Operario A</string>
+    <string name="workerBButton">Operario B</string>
+    <string name="simpleModeOption">Sencillo</string>
+    <string name="detailedModeOption">Detallado</string>
+
+    <string name="configsLabel">Configuraciones del Servidor:</string>
+    <string name="serveripLabel">IP servidor</string>
+    <string name="serverportLabel">Port</string>
+    <string name="serveripInfo">Ex:172.30.24.4</string>
+    <string name="serverportInfo">Ex:4567</string>
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

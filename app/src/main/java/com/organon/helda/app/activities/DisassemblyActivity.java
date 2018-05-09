@@ -408,11 +408,9 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
     public void onPartialResult(Hypothesis hypothesis) {
         if (hypothesis == null)
             return;
-
-        TextView textView;
-        String planStr;
         String text = hypothesis.getHypstr();
-        switch (text) {
+
+        switch (text.trim()) {
             case KWS_NEXT:
                 if(!pause) {
                     playClip();

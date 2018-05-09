@@ -98,7 +98,7 @@ public class AnomalyActivity extends AppCompatActivity {
 
     public void uploadRecording(){
         if(connectivity) {
-            AnomalyService.uploadRecording(1,new File(mFileName), new HttpAnomalyGateway(), new AnomalyService.Listener() {
+            AnomalyService.uploadRecording(disassemblyID,new File(mFileName), new HttpAnomalyGateway(), new AnomalyService.Listener() {
                 @Override
                 public void onComplete(Object response) {
                     if (response == null) {

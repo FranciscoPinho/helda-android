@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.SystemClock;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -59,11 +61,12 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
     /* Named searches allow to quickly reconfigure the decoder */
     private static final String KWS_SEARCH = "keywords";
     private static final String KWS_NEXT = "adelante";
-    private static final String KWS_REVERT = "regresar";
-    private static final String KWS_PAUSE = "detener";
+    private static final String KWS_REVERT = "reaparecer";
+    private static final String KWS_PAUSE = "interrumpir";
     private static final String KWS_STOP_PAUSE = "reanudar";
-    private static final String KWS_ANOMALY = "anomalia";
+    private static final String KWS_ANOMALY = "irregularidad";
     private static final int SIMPLE_MENU_OPTION_ID = 1;
+
 
     /* Used to handle permission request */
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
@@ -95,6 +98,8 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
     private static ConstraintLayout detailedView;
     private static ConstraintLayout simpleView;
     MenuItem modeChangeItem;
+
+    MediaPlayer player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +135,9 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         // Recognizer initialization is a time-consuming and it involves IO,
         // so we execute it in async task
         new DisassemblyActivity.SetupTask(this).execute();
+
+        initializeMediaPlayer();
+
 
         TextView operarioViewer = findViewById(R.id.OperarioView);
         operarioViewer.setText("Model: " + plan.getModel().toString());
@@ -227,7 +235,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                   anomalyActivity.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                   anomalyActivity.putExtra("currentPlan", plan);
                   anomalyActivity.putExtra("disassemblyID", disassemblyID);
-                  anomalyActivity.putExtra("task", task);
+                  anomalyActivity.putExtra("task", tasks.get(task).getId());
                   startActivity(anomalyActivity);
               }
         });
@@ -281,6 +289,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         });
     }
 
+
     @Override
     public void onResume(){
         super.onResume();
@@ -291,6 +300,9 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
             repeatTTS.setLanguage(new Locale("es", "ES"));
             new DisassemblyActivity.SetupTask(this).execute();
         }
+
+        initializeMediaPlayer();
+
         switch (app.anomalyDecision) {
             case "STOP":
                 findViewById(R.id.paradaButton).performClick();
@@ -366,6 +378,9 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
             recognizer.cancel();
             recognizer.shutdown();
         }
+        if(player != null){
+            player.release();
+        }
     }
 
     @Override
@@ -379,6 +394,9 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
             recognizer.cancel();
             recognizer.shutdown();
             recognizer=null;
+        }
+        if(player != null){
+            player.release();
         }
     }
     /**
@@ -397,30 +415,35 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         switch (text) {
             case KWS_NEXT:
                 if(!pause) {
+                    playClip();
                     Button listoButton = findViewById(R.id.listoButton);
                     listoButton.performClick();
                 }
                 break;
             case KWS_REVERT:
                 if(!pause) {
+                    playClip();
                     Button atrasButton = findViewById(R.id.atrasButton);
                     atrasButton.performClick();
                 }
                 break;
             case KWS_PAUSE:
                 if(!pause) {
+                    playClip();
                     Button paradaButton = findViewById(R.id.paradaButton);
                     paradaButton.performClick();
                 }
                 break;
             case KWS_ANOMALY:
                 if(!pause) {
+                    playClip();
                     Button anomalyButton = findViewById(R.id.anomaliaButton);
                     anomalyButton.performClick();
                 }
                 break;
             case KWS_STOP_PAUSE:
                 if(pause) {
+                    playClip();
                     Button backButton = pauseDialog.findViewById(R.id.reanudarButton);
                     backButton.performClick();
                 }
@@ -429,6 +452,25 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 break;
         }
         recognizer.stop();
+    }
+
+    public void playClip() {
+        if(player.isPlaying())
+            player.stop();
+        player.start();
+    }
+
+    public void initializeMediaPlayer() {
+        try{
+            Assets assets = new Assets(this);
+            File assetDir = assets.syncAssets();
+            File soundClip = new File(assetDir,"blip.wav");
+            player = MediaPlayer.create(this, Uri.parse(soundClip.getAbsolutePath()));
+            player.setLooping(false);
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
     }
 
     /**

@@ -89,7 +89,7 @@ public class AnomalyProcessActivity extends AppCompatActivity {
                             app.task = task;
                             app.anomalyDecision = "STOP";
                             finish();
-
+                            startActivity(intent);
                         }
                     });
 

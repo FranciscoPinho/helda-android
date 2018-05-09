@@ -7,21 +7,27 @@ import java.security.Timestamp;
 
 public class TaskTimeTable extends Entity {
     private int disassembly;
-    private int task_id;
-    private int task_time;
+    private int taskId;
+    private int taskTime;
+    private String role;
 
-    public TaskTimeTable(int disassembly, int task_id, int task_time) {
+    public TaskTimeTable(int disassembly, int taskId, int taskTime, String role) {
         this.disassembly = disassembly;
-        this.task_id = task_id;
-        this.task_time = task_time;
+        this.taskId = taskId;
+        this.taskTime = taskTime;
+        this.role = role;
     }
 
     public int getTask() {
-        return task_id;
+        return taskId;
     }
 
     public int getTime() {
-        return task_time;
+        return taskTime;
+    }
+
+    public String getRole() {
+        return role;
     }
 
 

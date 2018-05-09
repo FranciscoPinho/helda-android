@@ -21,13 +21,18 @@ public class registerTaskTime extends RequestHandler<registerTaskTimeRequestMess
             return false;
         }
 
-        if(request.task_id <= 0) {
+        if(request.taskId <= 0) {
             setValidationError("Task must be a positive integer!");
             return false;
         }
 
-        if(request.task_time <= 0) {
+        if(request.taskTime <= 0) {
             setValidationError("Time must be a positive integer!");
+            return false;
+        }
+
+        if (request.role != "A" && request.role != "B") {
+            setValidationError("Role must be A or B");
             return false;
         }
 
@@ -36,7 +41,7 @@ public class registerTaskTime extends RequestHandler<registerTaskTimeRequestMess
 
     @Override
     protected registerTaskTimeResponseMessage onValid(registerTaskTimeRequestMessage request) {
-        context.taskTimeTableGateway.insertTaskTime(request.disassembly, request.task_id, request.task_time);
+        context.taskTimeTableGateway.insertUpdateTaskTime(request.disassembly, request.taskId, request.taskTime, request.role);
         registerTaskTimeResponseMessage responseMessage = new registerTaskTimeResponseMessage();
         return responseMessage;
     }

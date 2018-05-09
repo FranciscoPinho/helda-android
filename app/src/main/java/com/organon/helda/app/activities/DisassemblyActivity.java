@@ -162,23 +162,24 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 int taskTimeMiliss = (int) (SystemClock.elapsedRealtime() - taskChronometer.getBase());
                 taskTimeList.add(task, taskTimeMiliss);
 
-                //at the end of the tasks, store all timetasks in database
-                if(task == (tasks.size() - 1)){
-                    int aux = 0;
-                    while(aux <= task){
-                        TaskTimeService.insertTaskTime(1, (aux+1), taskTimeList.get(aux), new HttpTaskTimeGateway(), new TaskTimeService.Listener() {
-                            @Override
-                            public void onComplete(Object response) {
-                                if (response == null) {
-                                    TextView textView = findViewById(R.id.textView3);
-                                    textView.setText("Erro en registro del tiempo de la tarea");
-                                }
-                            }
-                        });
-                        aux++;
-                    }
-
+                //Does not exists in the list
+                if(taskTimeList.get(task) >= taskTimeList.size() || taskTimeList.get(task) < 0){
+                    taskTimeList.add(task, taskTimeMiliss);
+                } else { //Already exists in the list
+                    int updatedTime = taskTimeList.get(task) + taskTimeMiliss;
+                    taskTimeList.set(task, updatedTime);
                 }
+                String worker = getIntent().getStringExtra("worker");
+                TaskTimeService.insertUpdateTaskTime(disassemblyID, tasks.get(task).getId(), taskTimeList.get(task), worker, new HttpTaskTimeGateway(), new TaskTimeService.Listener() {
+                    @Override
+                    public void onComplete(Object response) {
+                        if (response == null) {
+                            TextView textView = findViewById(R.id.textView3);
+                            textView.setText("Erro en registro del tiempo de la tarea");
+                        }
+                    }
+                });
+
                 tasks.get(task).done();
                 task++;
                 String planStr = getCurrentTask().getDescription();

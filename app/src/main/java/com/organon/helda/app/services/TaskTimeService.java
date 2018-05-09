@@ -20,14 +20,15 @@ public class TaskTimeService {
         void onComplete(Object response);
     }
 
-    public static void insertTaskTime(final int disasembly, final int task_id, final int task_time, final TaskTimeTableGateway gateway, final TaskTimeService.Listener listener) {
+    public static void insertUpdateTaskTime(final int disasembly, final int taskId, final int taskTime, final String role, final TaskTimeTableGateway gateway, final TaskTimeService.Listener listener) {
         ServiceHelper helper = new ServiceHelper(new ServiceHelper.Runnable() {
             @Override
             public Object run() {
                 registerTaskTimeRequestMessage request = new registerTaskTimeRequestMessage();
                 request.disassembly = disasembly;
-                request.task_id = task_id;
-                request.task_time = task_time;
+                request.taskId = taskId;
+                request.taskTime = taskTime;
+                request.role = role;
                 Context executionContext = new Context();
                 executionContext.taskTimeTableGateway = gateway;
                 registerTaskTime interactor = new registerTaskTime(executionContext);

@@ -175,50 +175,64 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
                 //Task time in miliseconds
                 int taskTimeMiliss = (int) (SystemClock.elapsedRealtime() - taskChronometer.getBase());
-                taskTimeList.add(task, taskTimeMiliss);
 
-                //at the end of the tasks, store all timetasks in database
-                if(task == (tasks.size() - 1)){
-                    int aux = 0;
-                    while(aux <= task){
-                        TaskTimeService.insertTaskTime(1, (aux+1), taskTimeList.get(aux), new HttpTaskTimeGateway(), new TaskTimeService.Listener() {
-                            @Override
-                            public void onComplete(Object response) {
-                                if (response == null) {
-                                    TextView textView = findViewById(R.id.textView3);
-                                    textView.setText("Erro en registro del tiempo de la tarea");
-                                }
-                            }
-                        });
-                        aux++;
-                    }
+                //Does not exists in the list
+                if(task >= taskTimeList.size() || task < 0)
+                    taskTimeList.add(task, taskTimeMiliss);
+                else
+                    taskTimeList.set(task, taskTimeMiliss);
 
-                    boolean allDone = true;
-                    for(int i = 0; i <= tasks.size(); i++) {
-                        if(tasks.get(i).getState() == -1 ) {
-                            allDone = false;
-                            break;
+
+                //final String worker = getIntent().getStringExtra("worker");
+                TaskTimeService.insertUpdateTaskTime(disassemblyID, tasks.get(task).getId(), taskTimeList.get(task), worker, new HttpTaskTimeGateway(), new TaskTimeService.Listener() {
+                    @Override
+                    public void onComplete(Object response) {
+                        if (response == null) {
+                            System.out.println("diss");
+                            System.out.println(disassemblyID);
+                            System.out.println("taskid");
+                            System.out.println(tasks.get(task).getId());
+                            System.out.println("task time");
+                            System.out.println(taskTimeList.get(task));
+                            System.out.println("worker type");
+                            System.out.println(worker);
+                            System.out.println("AQUIII");
+                            TextView textView = findViewById(R.id.textView3);
+                            //textView.setText("Erro en registro del tiempo de la tarea");
                         }
                     }
+                });
 
-                    if(allDone) {
-                        new DisassemblyService(HeldaApp.getContext()).completeDisassembly(disassemblyID, worker , new ServiceHelper.Listener<CompleteDisassemblyResponseMessage>() {
-                            @Override
-                            public void onComplete(CompleteDisassemblyResponseMessage o) {
-                                Intent intent = new Intent(DisassemblyActivity.this, BarcodeReaderActivity.class);
-                                finish();
-                                startActivity(intent);
-                            }
-                        });
+                boolean allDone = true;
+                for(int i = 0; i <= tasks.size(); i++) {
+                    if(tasks.get(i).getState() == -1 ) {
+                        allDone = false;
+                        break;
                     }
-
                 }
+
+                if(allDone) {
+                    new DisassemblyService(HeldaApp.getContext()).completeDisassembly(disassemblyID, worker, new ServiceHelper.Listener<CompleteDisassemblyResponseMessage>() {
+                        @Override
+                        public void onComplete(CompleteDisassemblyResponseMessage o) {
+                            Intent intent = new Intent(DisassemblyActivity.this, BarcodeReaderActivity.class);
+                            finish();
+                            startActivity(intent);
+                        }
+                    });
+                }
+
                 tasks.get(task).done();
                 task++;
                 String planStr = getCurrentTask().getDescription();
 
-                //Reset and Start chronometer for new task
-                taskChronometer.setBase(SystemClock.elapsedRealtime());
+                //Does not exists in the list
+                if(task >= taskTimeList.size() || task < 0)
+                    taskChronometer.setBase(SystemClock.elapsedRealtime());
+                else
+                    taskChronometer.setBase(SystemClock.elapsedRealtime() - taskTimeList.get(task));
+                //taskChronometer.
+
                 taskChronometer.start();
 
                 taskViewer.setText(planStr);
@@ -240,35 +254,41 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 if (task != 0) {
                     task--;
                     tasks.get(task).resumed();
+
+                    String planStr = getCurrentTask().getDescription();
+
+                    taskChronometer.stop();
+
+                    //Does not exists in the list
+                    if(task >= taskTimeList.size() || task < 0)
+                        taskChronometer.setBase(SystemClock.elapsedRealtime());
+                    else
+                        taskChronometer.setBase(SystemClock.elapsedRealtime() - taskTimeList.get(task));
+
+                    taskChronometer.start();
+
+                    taskViewer.setText(planStr);
                 }
-                String planStr = getCurrentTask().getDescription();
-
-                taskChronometer.stop();
-                //Reset and Start chronometer for new task
-                taskChronometer.setBase(SystemClock.elapsedRealtime());
-                taskChronometer.start();
-
-                taskViewer.setText(planStr);
             }
         });
 
         Button anomaliaButton = findViewById(R.id.anomaliaButton);
         anomaliaButton.setText(KWS_ANOMALY);
         anomaliaButton.setOnClickListener(new OnClickListener() {
-              public void onClick(View v) {
-                  repeatTTS.stop();
-                  recognizer.cancel();
-                  recognizer.shutdown();
-                  Intent anomalyActivity = new Intent(DisassemblyActivity.this, AnomalyActivity.class);
-                  anomalyActivity.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                  anomalyActivity.putExtra("currentPlan", plan);
-                  anomalyActivity.putExtra("disassemblyID", disassemblyID);
-                  anomalyActivity.putExtra("task", tasks.get(task).getId());
-                  startActivity(anomalyActivity);
-              }
+            public void onClick(View v) {
+                repeatTTS.stop();
+                recognizer.cancel();
+                recognizer.shutdown();
+                Intent anomalyActivity = new Intent(DisassemblyActivity.this, AnomalyActivity.class);
+                anomalyActivity.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                anomalyActivity.putExtra("currentPlan", plan);
+                anomalyActivity.putExtra("disassemblyID", disassemblyID);
+                anomalyActivity.putExtra("task", tasks.get(task).getId());
+                startActivity(anomalyActivity);
+            }
         });
 
-              
+
         Button paradaButton = findViewById(R.id.paradaButton);
         paradaButton.setText(KWS_PAUSE);
         paradaButton.setOnClickListener(new OnClickListener() {

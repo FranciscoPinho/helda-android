@@ -30,7 +30,7 @@ public class HttpTaskTimeGateway implements TaskTimeTableGateway {
         params.put("worker", String.valueOf(1));
         params.put("role", String.valueOf(role));
         NetworkManager networkManager = NetworkManager.getInstance();
-        JSONObject res = networkManager.getSync(NetworkConstants.BASE_URL + NetworkConstants.REGISTER_TASKTIME, params);
+        JSONObject res = networkManager.postSync(NetworkConstants.BASE_URL + NetworkConstants.REGISTER_TASKTIME, params);
 
         if (res == null) {
             System.out.println("Response from server is null");

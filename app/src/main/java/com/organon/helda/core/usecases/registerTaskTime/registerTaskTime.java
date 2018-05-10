@@ -31,7 +31,7 @@ public class registerTaskTime extends RequestHandler<registerTaskTimeRequestMess
             return false;
         }
 
-        if (request.role != "A" && request.role != "B") {
+        if (!request.role.equals("A") && !request.role.equals("B")) {
             setValidationError("Role must be A or B");
             return false;
         }

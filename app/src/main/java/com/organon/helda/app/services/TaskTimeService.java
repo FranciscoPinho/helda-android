@@ -39,6 +39,7 @@ public class TaskTimeService {
             public void onComplete(Object o) {
                 registerTaskTimeResponseMessage response = (registerTaskTimeResponseMessage)o;
                 if (response.isError()){
+                    System.out.println(response.getMessage());
                     listener.onComplete(null);
                 }
                 else listener.onComplete(response);

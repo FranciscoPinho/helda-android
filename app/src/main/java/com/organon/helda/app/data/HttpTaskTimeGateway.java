@@ -21,15 +21,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HttpTaskTimeGateway implements TaskTimeTableGateway {
-    public int insertTaskTime(int disassembly, int task, int duration) {
+    public int insertUpdateTaskTime(int disassembly, int task, int duration, String role) {
         Map<String, String> params = new HashMap<>();
         params.put("disassembly", String.valueOf(disassembly));
         params.put("task", String.valueOf(task));
         params.put("duration", String.valueOf(duration));
         // TODO: Use the actual worker ID once workers are in the database
         params.put("worker", String.valueOf(1));
+        params.put("role", String.valueOf(role));
         NetworkManager networkManager = NetworkManager.getInstance();
-        JSONObject res = networkManager.getSync(NetworkConstants.BASE_URL + NetworkConstants.REGISTER_TASKTIME, params);
+        JSONObject res = networkManager.postSync(NetworkConstants.BASE_URL + NetworkConstants.REGISTER_TASKTIME, params);
 
         if (res == null) {
             System.out.println("Response from server is null");

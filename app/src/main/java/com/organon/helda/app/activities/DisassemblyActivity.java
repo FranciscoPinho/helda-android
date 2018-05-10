@@ -119,7 +119,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
         plan=(Plan)getIntent().getSerializableExtra("currentPlan");
         disassemblyID = (int) getIntent().getSerializableExtra("disassemblyID");
-        String worker = getIntent().getStringExtra("worker");
+        final String worker = getIntent().getStringExtra("worker");
         if (worker.equals("A")) tasks = plan.getTasksWorkerA();
         if (worker.equals("B")) tasks = plan.getTasksWorkerB();
 
@@ -172,31 +172,45 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
                 //Task time in miliseconds
                 int taskTimeMiliss = (int) (SystemClock.elapsedRealtime() - taskChronometer.getBase());
-                taskTimeList.add(task, taskTimeMiliss);
 
-                //at the end of the tasks, store all timetasks in database
-                if(task == (tasks.size() - 1)){
-                    int aux = 0;
-                    while(aux <= task){
-                        TaskTimeService.insertTaskTime(1, (aux+1), taskTimeList.get(aux), new HttpTaskTimeGateway(), new TaskTimeService.Listener() {
-                            @Override
-                            public void onComplete(Object response) {
-                                if (response == null) {
-                                    TextView textView = findViewById(R.id.textView3);
-                                    textView.setText("Erro en registro del tiempo de la tarea");
-                                }
-                            }
-                        });
-                        aux++;
+                //Does not exists in the list
+                if(task >= taskTimeList.size() || task < 0)
+                    taskTimeList.add(task, taskTimeMiliss);
+                else
+                    taskTimeList.set(task, taskTimeMiliss);
+
+
+                //final String worker = getIntent().getStringExtra("worker");
+                TaskTimeService.insertUpdateTaskTime(disassemblyID, tasks.get(task).getId(), taskTimeList.get(task), worker, new HttpTaskTimeGateway(), new TaskTimeService.Listener() {
+                    @Override
+                    public void onComplete(Object response) {
+                        if (response == null) {
+                            System.out.println("diss");
+                            System.out.println(disassemblyID);
+                            System.out.println("taskid");
+                            System.out.println(tasks.get(task).getId());
+                            System.out.println("task time");
+                            System.out.println(taskTimeList.get(task));
+                            System.out.println("worker type");
+                            System.out.println(worker);
+                            System.out.println("AQUIII");
+                            TextView textView = findViewById(R.id.textView3);
+                            //textView.setText("Erro en registro del tiempo de la tarea");
+                        }
                     }
+                });
 
-                }
                 tasks.get(task).done();
                 task++;
                 String planStr = getCurrentTask().getDescription();
 
-                //Reset and Start chronometer for new task
-                taskChronometer.setBase(SystemClock.elapsedRealtime());
+                //Does not exists in the list
+                if(task >= taskTimeList.size() || task < 0)
+                    taskChronometer.setBase(SystemClock.elapsedRealtime());
+                else
+                    taskChronometer.setBase(SystemClock.elapsedRealtime() - taskTimeList.get(task));
+                //taskChronometer.
+
                 taskChronometer.start();
 
                 taskViewer.setText(planStr);
@@ -218,15 +232,21 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 if (task != 0) {
                     task--;
                     tasks.get(task).resumed();
+
+                    String planStr = getCurrentTask().getDescription();
+
+                    taskChronometer.stop();
+
+                    //Does not exists in the list
+                    if(task >= taskTimeList.size() || task < 0)
+                        taskChronometer.setBase(SystemClock.elapsedRealtime());
+                    else
+                        taskChronometer.setBase(SystemClock.elapsedRealtime() - taskTimeList.get(task));
+
+                    taskChronometer.start();
+
+                    taskViewer.setText(planStr);
                 }
-                String planStr = getCurrentTask().getDescription();
-
-                taskChronometer.stop();
-                //Reset and Start chronometer for new task
-                taskChronometer.setBase(SystemClock.elapsedRealtime());
-                taskChronometer.start();
-
-                taskViewer.setText(planStr);
             }
         });
 

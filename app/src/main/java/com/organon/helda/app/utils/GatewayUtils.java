@@ -27,9 +27,10 @@ public class GatewayUtils {
         for (int i = 0; i < tasks.length(); ++i) {
             JSONObject task = tasks.getJSONObject(i);
 
+            int id = task.getInt("id");
             String descripton = task.getString("description");
 
-            result.add(new Task()
+            result.add(new Task(id)
                     .setDescription(descripton));
         }
         return result;

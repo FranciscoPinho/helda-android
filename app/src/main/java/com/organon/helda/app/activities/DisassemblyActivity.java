@@ -37,11 +37,14 @@ import com.organon.helda.app.HeldaApp;
 import com.organon.helda.app.data.HttpTaskTimeGateway;
 import com.organon.helda.app.data.NetworkManager;
 import com.organon.helda.app.fragments.SettingsFragment;
+import com.organon.helda.app.services.DisassemblyService;
+import com.organon.helda.app.services.ServiceHelper;
 import com.organon.helda.app.utils.Utils;
 import com.organon.helda.app.services.TaskTimeService;
 
 import com.organon.helda.core.entities.Plan;
 import com.organon.helda.core.entities.Task;
+import com.organon.helda.core.usecases.completedisassembly.CompleteDisassemblyResponseMessage;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -119,7 +122,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
         plan=(Plan)getIntent().getSerializableExtra("currentPlan");
         disassemblyID = (int) getIntent().getSerializableExtra("disassemblyID");
-        String worker = getIntent().getStringExtra("worker");
+        final String worker = getIntent().getStringExtra("worker");
         if (worker.equals("A")) tasks = plan.getTasksWorkerA();
         if (worker.equals("B")) tasks = plan.getTasksWorkerB();
 
@@ -188,6 +191,25 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                             }
                         });
                         aux++;
+                    }
+
+                    boolean allDone = true;
+                    for(int i = 0; i <= tasks.size(); i++) {
+                        if(tasks.get(i).getState() == -1 ) {
+                            allDone = false;
+                            break;
+                        }
+                    }
+
+                    if(allDone) {
+                        new DisassemblyService(HeldaApp.getContext()).completeDisassembly(disassemblyID, worker , new ServiceHelper.Listener<CompleteDisassemblyResponseMessage>() {
+                            @Override
+                            public void onComplete(CompleteDisassemblyResponseMessage o) {
+                                Intent intent = new Intent(DisassemblyActivity.this, BarcodeReaderActivity.class);
+                                finish();
+                                startActivity(intent);
+                            }
+                        });
                     }
 
                 }

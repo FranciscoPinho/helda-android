@@ -162,6 +162,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
         taskViewer.setGravity(Gravity.CENTER);
         Button simpleListo = findViewById(R.id.simpleListoButton);
+        simpleListo.setText(KWS_NEXT);
         final Button listoButton = findViewById(R.id.listoButton);
         listoButton.setText(KWS_NEXT);
         listoButton.setOnClickListener(new OnClickListener() {

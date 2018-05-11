@@ -39,11 +39,14 @@ import com.organon.helda.app.HeldaApp;
 import com.organon.helda.app.data.HttpTaskTimeGateway;
 import com.organon.helda.app.data.NetworkManager;
 import com.organon.helda.app.fragments.SettingsFragment;
+import com.organon.helda.app.services.DisassemblyService;
+import com.organon.helda.app.services.ServiceHelper;
 import com.organon.helda.app.utils.Utils;
 import com.organon.helda.app.services.TaskTimeService;
 
 import com.organon.helda.core.entities.Plan;
 import com.organon.helda.core.entities.Task;
+import com.organon.helda.core.usecases.completedisassembly.CompleteDisassemblyResponseMessage;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -130,7 +133,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
         plan=(Plan)getIntent().getSerializableExtra("currentPlan");
         disassemblyID = (int) getIntent().getSerializableExtra("disassemblyID");
-        String worker = getIntent().getStringExtra("worker");
+        final String worker = getIntent().getStringExtra("worker");
         if (worker.equals("A")) tasks = plan.getTasksWorkerA();
         if (worker.equals("B")) tasks = plan.getTasksWorkerB();
 
@@ -179,6 +182,26 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         listoButton.setText(KWS_NEXT);
         listoButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
+                if(task == (tasks.size() - 1)) {
+                    boolean allDone = true;
+                    for (int i = 0; i < tasks.size(); i++) {
+                        if (tasks.get(i).getState() == -1) {
+                            allDone = false;
+                            break;
+                        }
+                    }
+
+                    if (allDone) {
+                        new DisassemblyService(HeldaApp.getContext()).completeDisassembly(disassemblyID, worker, new ServiceHelper.Listener<CompleteDisassemblyResponseMessage>() {
+                            @Override
+                            public void onComplete(CompleteDisassemblyResponseMessage o) {
+                                Intent intent = new Intent(DisassemblyActivity.this, MenuActivity.class);
+                                finish();
+                                startActivity(intent);
+                            }
+                        });
+                    }
+                }
 
                 taskChronometer.stop();
 
@@ -186,28 +209,27 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 int taskTimeMiliss = (int) (SystemClock.elapsedRealtime() - taskChronometer.getBase());
                 taskTimeList.put(task, taskTimeMiliss);
 
-                //at the end of the tasks, store all timetasks in database
-                if(task == (tasks.size() - 1)){
-                    int aux = 0;
-                    while(aux <= task){
-                        TaskTimeService.insertTaskTime(1, (aux+1), taskTimeList.get(aux), new HttpTaskTimeGateway(), new TaskTimeService.Listener() {
-                            @Override
-                            public void onComplete(Object response) {
-                                if (response == null) {
-                                    TextView textView = findViewById(R.id.textView3);
-                                    textView.setText("Erro en registro del tiempo de la tarea");
-                                }
-                            }
-                        });
-                        aux++;
+                //final String worker = getIntent().getStringExtra("worker");
+                TaskTimeService.insertUpdateTaskTime(disassemblyID, tasks.get(task).getId(), taskTimeList.get(task), worker, new HttpTaskTimeGateway(), new TaskTimeService.Listener() {
+                    @Override
+                    public void onComplete(Object response) {
+                        if (response == null) {
+                            TextView textView = findViewById(R.id.textView3);
+                            //textView.setText("Erro en registro del tiempo de la tarea");
+                        }
                     }
+                });
 
-                }
                 getCurrentTask().setState(Task.State.DONE);
                 nextTask();
 
-                //Reset and Start chronometer for new task
-                taskChronometer.setBase(SystemClock.elapsedRealtime());
+                //Does not exists in the list
+                if(taskTimeList.get(task) == null)
+                    taskChronometer.setBase(SystemClock.elapsedRealtime());
+                else
+                    taskChronometer.setBase(SystemClock.elapsedRealtime() - taskTimeList.get(task));
+                //taskChronometer.
+
                 taskChronometer.start();
 
                 String planStr = getCurrentTask().getDescription();
@@ -229,35 +251,40 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 if (task != 0) {
                     previousTask();
                     getCurrentTask().setState(Task.State.UNDONE);
+
+                    String planStr = getCurrentTask().getDescription();
+
+                    taskChronometer.stop();
+
+                    //Does not exists in the list
+                    if(taskTimeList.get(task) == null)
+                        taskChronometer.setBase(SystemClock.elapsedRealtime());
+                    else
+                        taskChronometer.setBase(SystemClock.elapsedRealtime() - taskTimeList.get(task));
+
+                    taskChronometer.start();
+                    taskViewer.setText(planStr);
                 }
-                String planStr = getCurrentTask().getDescription();
-
-                taskChronometer.stop();
-                //Reset and Start chronometer for new task
-                taskChronometer.setBase(SystemClock.elapsedRealtime());
-                taskChronometer.start();
-
-                taskViewer.setText(planStr);
             }
         });
 
         Button anomaliaButton = findViewById(R.id.anomaliaButton);
         anomaliaButton.setText(KWS_ANOMALY);
         anomaliaButton.setOnClickListener(new OnClickListener() {
-              public void onClick(View v) {
-                  repeatTTS.stop();
-                  recognizer.cancel();
-                  recognizer.shutdown();
-                  Intent anomalyActivity = new Intent(DisassemblyActivity.this, AnomalyActivity.class);
-                  anomalyActivity.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                  anomalyActivity.putExtra("currentPlan", plan);
-                  anomalyActivity.putExtra("disassemblyID", disassemblyID);
-                  anomalyActivity.putExtra("task", tasks.get(task).getId());
-                  startActivity(anomalyActivity);
-              }
+            public void onClick(View v) {
+                repeatTTS.stop();
+                recognizer.cancel();
+                recognizer.shutdown();
+                Intent anomalyActivity = new Intent(DisassemblyActivity.this, AnomalyActivity.class);
+                anomalyActivity.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                anomalyActivity.putExtra("currentPlan", plan);
+                anomalyActivity.putExtra("disassemblyID", disassemblyID);
+                anomalyActivity.putExtra("task", tasks.get(task).getId());
+                startActivity(anomalyActivity);
+            }
         });
 
-              
+
         Button paradaButton = findViewById(R.id.paradaButton);
         paradaButton.setText(KWS_PAUSE);
         paradaButton.setOnClickListener(new OnClickListener() {
@@ -628,11 +655,11 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
     }
 
     private void nextTask() {
-        task++;
+        if(task != (tasks.size() - 1)) task++;
     }
 
     private void previousTask() {
-        task--;
+        if (task > 0) task--;
     }
 
     private List<Task> getSkippedTasks() {

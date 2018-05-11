@@ -31,7 +31,8 @@ public class GatewayUtils {
             String descripton = task.getString("description");
 
             result.add(new Task(id)
-                    .setDescription(descripton));
+                    .setDescription(descripton)
+                    .setOffset(result.size()));
         }
         return result;
     }

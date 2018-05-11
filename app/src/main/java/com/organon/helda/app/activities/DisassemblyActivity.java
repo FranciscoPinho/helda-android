@@ -22,6 +22,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,6 +31,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Chronometer;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import com.organon.helda.R;
@@ -45,10 +47,12 @@ import com.organon.helda.core.entities.Task;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.Map;
 
 import edu.cmu.pocketsphinx.Assets;
 import edu.cmu.pocketsphinx.Hypothesis;
@@ -67,8 +71,10 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
     private static final String KWS_PAUSE = "interrumpir";
     private static final String KWS_STOP_PAUSE = "reanudar";
     private static final String KWS_ANOMALY = "irregularidad";
-    private static final int SIMPLE_MENU_OPTION_ID = 1;
 
+    /* Menu options */
+    private static final int SIMPLE_MENU_OPTION_ID = 1;
+    private static final int GO_BACK_TO_SKIPPED_TASK_OPTION_ID = 2;
 
     /* Used to handle permission request */
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
@@ -92,16 +98,21 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
     private boolean pause = false;
 
-    private List<Integer> taskTimeList = new ArrayList<Integer>();
+    private Map<Integer, Integer> taskTimeList = new HashMap<>();
 
     private HeldaApp app;
 
     private static ViewSwitcher viewSwitcher;
     private static ConstraintLayout detailedView;
     private static ConstraintLayout simpleView;
-    MenuItem modeChangeItem;
 
     MediaPlayer player;
+
+    /* Menu items */
+    private MenuItem modeChangeItem;
+    private MenuItem goBackToSkippedTaskItem;
+
+    private static final int PICK_SKIPPED_TASK_REQUEST = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,6 +165,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
             public void onTextChanged(CharSequence s, int start,
                                       int before, int count) {
+                if (repeatTTS == null) return;
                 if(repeatTTS.isSpeaking())
                     repeatTTS.stop();
                 repeatTTS.speak(getCurrentTask().getDescription(), TextToSpeech.QUEUE_FLUSH, null);
@@ -172,7 +184,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
                 //Task time in miliseconds
                 int taskTimeMiliss = (int) (SystemClock.elapsedRealtime() - taskChronometer.getBase());
-                taskTimeList.add(task, taskTimeMiliss);
+                taskTimeList.put(task, taskTimeMiliss);
 
                 //at the end of the tasks, store all timetasks in database
                 if(task == (tasks.size() - 1)){
@@ -191,16 +203,15 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                     }
 
                 }
-                tasks.get(task).done();
-                task++;
-                String planStr = getCurrentTask().getDescription();
+                getCurrentTask().setState(Task.State.DONE);
+                nextTask();
 
                 //Reset and Start chronometer for new task
                 taskChronometer.setBase(SystemClock.elapsedRealtime());
                 taskChronometer.start();
 
+                String planStr = getCurrentTask().getDescription();
                 taskViewer.setText(planStr);
-
             }
         });
 
@@ -216,8 +227,8 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         atrasButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 if (task != 0) {
-                    task--;
-                    tasks.get(task).resumed();
+                    previousTask();
+                    getCurrentTask().setState(Task.State.UNDONE);
                 }
                 String planStr = getCurrentTask().getDescription();
 
@@ -316,8 +327,8 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 findViewById(R.id.paradaButton).performClick();
                 break;
             case "SKIP":
-                tasks.get(task).skipped();
-                task = task+1;
+                getCurrentTask().setState(Task.State.SKIPPED);
+                nextTask();
                 break;
         }
 
@@ -534,8 +545,11 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        modeChangeItem=menu.add(0,SIMPLE_MENU_OPTION_ID,0,R.string.simpleModeOption);
-        modeChangeItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        modeChangeItem = menu.add(0, SIMPLE_MENU_OPTION_ID, 0, R.string.simpleModeOption);
+        modeChangeItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+
+        goBackToSkippedTaskItem = menu.add(0, GO_BACK_TO_SKIPPED_TASK_OPTION_ID, 0, R.string.goBackToSkippedTaskOption);
+        goBackToSkippedTaskItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
         return true;
     }
 
@@ -545,6 +559,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+
         if (id == R.id.action_settings) {
             getFragmentManager().beginTransaction()
                     .replace(android.R.id.content, new SettingsFragment())
@@ -552,6 +567,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                     .commit();
             return true;
         }
+
         if (id == SIMPLE_MENU_OPTION_ID){
             if (viewSwitcher.getCurrentView() != detailedView){
                 item.setTitle(R.string.simpleModeOption);
@@ -560,8 +576,19 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 item.setTitle(R.string.detailedModeOption);
                 viewSwitcher.showNext();
             }
-
             return true;
+        }
+
+        if (id == GO_BACK_TO_SKIPPED_TASK_OPTION_ID) {
+            ArrayList<Task> tasks = (ArrayList<Task>) getSkippedTasks();
+            if (tasks.isEmpty()) {
+                Toast toast = Toast.makeText(getApplicationContext(), "Ninguna tarea fue omitida", Toast.LENGTH_SHORT);
+                toast.show();
+            } else {
+                Intent intent = new Intent(this, PickSkippedTaskActivity.class);
+                intent.putExtra("tasks", tasks);
+                startActivityForResult(intent, PICK_SKIPPED_TASK_REQUEST);
+            }
         }
 
         return super.onOptionsItemSelected(item);
@@ -569,7 +596,6 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
     @Override
     public void onBackPressed() {
-
         int count = getFragmentManager().getBackStackEntryCount();
         if (count == 0) {
             super.onBackPressed();
@@ -578,6 +604,44 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
             Utils.resetSystemProperties(sharedPref);
             getFragmentManager().popBackStack();
         }
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PICK_SKIPPED_TASK_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                int skippedTask = data.getIntExtra("task", -1);
+                if (task < 0) {
+                    Toast toast = Toast.makeText(getApplicationContext(), "Algo fue mal", Toast.LENGTH_SHORT);
+                    toast.show();
+                    return;
+                }
+                task = skippedTask;
+
+                taskChronometer.setBase(SystemClock.elapsedRealtime());
+                taskChronometer.start();
+                TextView taskViewer = findViewById(R.id.taskViewer);
+                String planStr = getCurrentTask().getDescription();
+                taskViewer.setText(planStr);
+            }
+        }
+    }
+
+    private void nextTask() {
+        task++;
+    }
+
+    private void previousTask() {
+        task--;
+    }
+
+    private List<Task> getSkippedTasks() {
+        List<Task> result = new ArrayList<>();
+        for (Task task : tasks) {
+            if (task.getState() == Task.State.SKIPPED) {
+                result.add(task);
+            }
+        }
+        return result;
     }
 }

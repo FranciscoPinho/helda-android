@@ -40,6 +40,7 @@ import com.organon.helda.app.data.HttpPauseGateway;
 import com.organon.helda.app.data.HttpTaskTimeGateway;
 import com.organon.helda.app.data.NetworkManager;
 import com.organon.helda.app.fragments.SettingsFragment;
+import com.organon.helda.app.services.PauseService;
 import com.organon.helda.app.services.DisassemblyService;
 import com.organon.helda.app.services.ServiceHelper;
 import com.organon.helda.app.services.PauseService;

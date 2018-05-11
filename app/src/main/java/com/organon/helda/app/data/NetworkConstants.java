@@ -7,6 +7,7 @@ public class NetworkConstants {
     public static final String UPLOAD_RECORDING = "anomalies/%s/audio";
     public static final String GET_PLAN = "plans/%s";
     public static final String CREATE_DISASSEMBLY = "disassemblies/";
+    public static final String COMPLETE_DISASSEMBLY = "disassemblies/%s/complete";
     public static final String START_DISASSEMBLY = "disassemblies/%s";
     public static final String REGISTER_TASKTIME = "completed-tasks/";
 

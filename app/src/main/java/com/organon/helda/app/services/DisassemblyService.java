@@ -7,6 +7,9 @@ import com.organon.helda.core.usecases.completedisassembly.CompleteDisassemblyRe
 import com.organon.helda.core.usecases.createdisassembly.CreateDisassembly;
 import com.organon.helda.core.usecases.createdisassembly.CreateDisassemblyRequestMessage;
 import com.organon.helda.core.usecases.createdisassembly.CreateDisassemblyResponseMessage;
+import com.organon.helda.core.usecases.existsdisassembly.ExistDisassembly;
+import com.organon.helda.core.usecases.existsdisassembly.ExistDisassemblyRequestMessage;
+import com.organon.helda.core.usecases.existsdisassembly.ExistDisassemblyResponseMessage;
 import com.organon.helda.core.usecases.startdisassembly.StartDisassembly;
 import com.organon.helda.core.usecases.startdisassembly.StartDisassemblyRequestMessage;
 import com.organon.helda.core.usecases.startdisassembly.StartDisassemblyResponseMessage;
@@ -73,6 +76,25 @@ public class DisassemblyService {
             @Override
             public void onComplete(Object o) {
                 CompleteDisassemblyResponseMessage response = (CompleteDisassemblyResponseMessage)o;
+                listener.onComplete(response);
+            }
+        }).execute();
+    }
+
+    public void existDisassembly(final String vin, final ServiceHelper.Listener<ExistDisassemblyResponseMessage> listener){
+        new ServiceHelper(new ServiceHelper.Runnable() {
+            @Override
+            public Object run() {
+                ExistDisassemblyRequestMessage request = new ExistDisassemblyRequestMessage();
+                request.vin=vin;
+
+                ExistDisassembly interactor = new ExistDisassembly(context);
+                return interactor.handle(request);
+            }
+        }, new ServiceHelper.Listener() {
+            @Override
+            public void onComplete(Object o) {
+                ExistDisassemblyResponseMessage response = (ExistDisassemblyResponseMessage)o;
                 listener.onComplete(response);
             }
         }).execute();

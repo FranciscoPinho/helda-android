@@ -1,18 +1,10 @@
 package com.organon.helda.app.services;
 
-import com.organon.helda.app.utils.Utils;
 import com.organon.helda.core.Context;
-import com.organon.helda.core.gateways.AnomalyGateway;
 import com.organon.helda.core.gateways.TaskTimeTableGateway;
-import com.organon.helda.core.usecases.registerAnomaly.RegisterAnomalyResponseMessage;
 import com.organon.helda.core.usecases.registerTaskTime.registerTaskTime;
 import com.organon.helda.core.usecases.registerTaskTime.registerTaskTimeRequestMessage;
 import com.organon.helda.core.usecases.registerTaskTime.registerTaskTimeResponseMessage;
-import com.organon.helda.core.usecases.uploadRecording.UploadRecording;
-import com.organon.helda.core.usecases.uploadRecording.UploadRecordingRequestMessage;
-import com.organon.helda.core.usecases.uploadRecording.UploadRecordingResponseMessage;
-
-import java.io.File;
 
 public class TaskTimeService {
 

@@ -1,22 +1,10 @@
 package com.organon.helda.app.data;
 
-import android.util.Log;
-
-import com.android.volley.NetworkResponse;
-import com.android.volley.NoConnectionError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.TimeoutError;
-import com.android.volley.VolleyError;
-import com.organon.helda.app.utils.Utils;
-import com.organon.helda.core.gateways.AnomalyGateway;
 import com.organon.helda.core.gateways.TaskTimeTableGateway;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 

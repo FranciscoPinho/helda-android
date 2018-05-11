@@ -2,6 +2,8 @@ package com.organon.helda.app.data;
 
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.organon.helda.core.entities.Disassembly;
 import com.organon.helda.core.entities.Plan;
 import com.organon.helda.core.entities.Task;
@@ -75,6 +77,12 @@ public class HttpDisassemblyGateway implements DisassemblyGateway {
             String locale = plan.getString("locale");
             String model = plan.getString("model");
             Date modified = jsonToDate(plan.getJSONObject("modified"));
+            int lastTaskA = plan.getInt("lastTaskWorkerA");
+            int lastTaskB = plan.getInt("lastTaskWorkerB");
+            JSONObject tasktimesObjA = plan.getJSONObject("taskTimesWorkerA");
+            JSONObject tasktimesObjB = plan.getJSONObject("taskTimesWorkerB");
+            Map<Integer,Integer> taskTimesA =  new Gson().fromJson(tasktimesObjA.toString(), new TypeToken<HashMap<Integer, Integer>>() {}.getType());
+            Map<Integer,Integer> taskTimesB =  new Gson().fromJson(tasktimesObjB.toString(), new TypeToken<HashMap<Integer, Integer>>() {}.getType());
             List<Task> tasksWorkerA = jsonToTaskList(plan.getJSONArray("tasksWorkerA"));
             List<Task> tasksWorkerB = jsonToTaskList(plan.getJSONArray("tasksWorkerB"));
 
@@ -83,7 +91,11 @@ public class HttpDisassemblyGateway implements DisassemblyGateway {
                     .setModel(model)
                     .setModified(modified)
                     .setTasksWorkerA(tasksWorkerA)
-                    .setTasksWorkerB(tasksWorkerB);
+                    .setTasksWorkerB(tasksWorkerB)
+                    .setLastTaskWorkerA(lastTaskA)
+                    .setLastTaskWorkerB(lastTaskB)
+                    .setTaskTimesWorkerA(taskTimesA)
+                    .setTaskTimesWorkerB(taskTimesB);
         }
         catch (JSONException e) {
             throw new RuntimeException(e.getMessage());

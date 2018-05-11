@@ -1,7 +1,7 @@
 package com.organon.helda.app.activities;
 
-import android.app.Dialog;
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -9,9 +9,9 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.SystemClock;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
@@ -22,15 +22,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Chronometer;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
@@ -41,20 +40,19 @@ import com.organon.helda.app.data.NetworkManager;
 import com.organon.helda.app.fragments.SettingsFragment;
 import com.organon.helda.app.services.DisassemblyService;
 import com.organon.helda.app.services.ServiceHelper;
-import com.organon.helda.app.utils.Utils;
 import com.organon.helda.app.services.TaskTimeService;
-
+import com.organon.helda.app.utils.Utils;
 import com.organon.helda.core.entities.Plan;
 import com.organon.helda.core.entities.Task;
 import com.organon.helda.core.usecases.completedisassembly.CompleteDisassemblyResponseMessage;
 
 import java.io.File;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.Map;
 
 import edu.cmu.pocketsphinx.Assets;
@@ -134,8 +132,34 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         plan=(Plan)getIntent().getSerializableExtra("currentPlan");
         disassemblyID = (int) getIntent().getSerializableExtra("disassemblyID");
         final String worker = getIntent().getStringExtra("worker");
-        if (worker.equals("A")) tasks = plan.getTasksWorkerA();
-        if (worker.equals("B")) tasks = plan.getTasksWorkerB();
+        if (worker.equals("A")) {
+            tasks = plan.getTasksWorkerA();
+            taskTimeList= plan.getTaskTimesWorkerA();
+            task=0;
+            if(plan.getLastTaskWorkerA()!=-1)
+                for(Task t: tasks){
+                    if(plan.getTaskTimesWorkerA().containsKey(t.getId()))
+                        t.setState(Task.State.DONE);
+                    if(t.getId()==plan.getLastTaskWorkerA()){
+                        task = tasks.indexOf(t);
+                        nextTask();
+                    }
+                }
+        }
+        if (worker.equals("B")){
+            tasks = plan.getTasksWorkerB();
+            taskTimeList= plan.getTaskTimesWorkerB();
+            task=0;
+            if(plan.getLastTaskWorkerB()!=-1)
+                for(Task t: tasks){
+                    if(plan.getTaskTimesWorkerB().containsKey(t.getId()))
+                        t.setState(Task.State.DONE);
+                    if(t.getId()==plan.getLastTaskWorkerB()){
+                        task = tasks.indexOf(t);
+                        nextTask();
+                    }
+                }
+        }
 
         repeatTTS = new TextToSpeech(this, this);
         repeatTTS.setLanguage(new Locale("es", "ES"));
@@ -207,9 +231,9 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
                 //Task time in miliseconds
                 int taskTimeMiliss = (int) (SystemClock.elapsedRealtime() - taskChronometer.getBase());
-                taskTimeList.put(task, taskTimeMiliss);
+                taskTimeList.put(tasks.get(task).getId(), taskTimeMiliss);
 
-                TaskTimeService.insertUpdateTaskTime(disassemblyID, tasks.get(task).getId(), taskTimeList.get(task), worker, new HttpTaskTimeGateway(), new TaskTimeService.Listener() {
+                TaskTimeService.insertUpdateTaskTime(disassemblyID, tasks.get(task).getId(), taskTimeList.get(tasks.get(task).getId()), worker, new HttpTaskTimeGateway(), new TaskTimeService.Listener() {
                     @Override
                     public void onComplete(Object response) {
                         if (response == null) {
@@ -222,10 +246,10 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 nextTask();
 
                 //Does not exists in the list
-                if(taskTimeList.get(task) == null)
+                if(taskTimeList.get(tasks.get(task).getId()) == null)
                     taskChronometer.setBase(SystemClock.elapsedRealtime());
                 else
-                    taskChronometer.setBase(SystemClock.elapsedRealtime() - taskTimeList.get(task));
+                    taskChronometer.setBase(SystemClock.elapsedRealtime() - taskTimeList.get(tasks.get(task).getId()));
                 //taskChronometer.
 
                 taskChronometer.start();
@@ -255,10 +279,10 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                     taskChronometer.stop();
 
                     //Does not exists in the list
-                    if(taskTimeList.get(task) == null)
+                    if(taskTimeList.get(tasks.get(task).getId()) == null)
                         taskChronometer.setBase(SystemClock.elapsedRealtime());
                     else
-                        taskChronometer.setBase(SystemClock.elapsedRealtime() - taskTimeList.get(task));
+                        taskChronometer.setBase(SystemClock.elapsedRealtime() - taskTimeList.get(tasks.get(task).getId()));
 
                     taskChronometer.start();
                     taskViewer.setText(planStr);
@@ -364,10 +388,15 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
         TextView taskviewer = findViewById(R.id.taskViewer);
         taskviewer.setText(getCurrentTask().getDescription());
-        taskChronometer.setBase(SystemClock.elapsedRealtime());
+        if(taskTimeList.get(tasks.get(task).getId()) == null)
+            taskChronometer.setBase(SystemClock.elapsedRealtime());
+        else
+            taskChronometer.setBase(SystemClock.elapsedRealtime() - taskTimeList.get(tasks.get(task).getId()));
         taskChronometer.start();
         repeatTTS.speak(getCurrentTask().getDescription(), TextToSpeech.QUEUE_FLUSH, null);
     }
+
+
 
     private static class SetupTask extends AsyncTask<Void, Void, Exception> {
         WeakReference<DisassemblyActivity> activityReference;

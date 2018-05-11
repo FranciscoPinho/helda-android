@@ -149,7 +149,6 @@ public class BarcodeReaderActivity extends AppCompatActivity {
                     else {
                         Intent intent = new Intent(BarcodeReaderActivity.this, ChooseTasksActivity.class);
                         intent.putExtra("disassembly", response.disassembly);
-                        intent.putExtra("resume", true);
                         finish();
                         startActivity(intent);
                     }

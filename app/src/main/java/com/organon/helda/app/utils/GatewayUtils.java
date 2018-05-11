@@ -8,7 +8,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GatewayUtils {
     public static Date jsonToDate(JSONObject datetime) throws JSONException {
@@ -36,4 +38,5 @@ public class GatewayUtils {
         }
         return result;
     }
+
 }

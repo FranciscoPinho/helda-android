@@ -183,7 +183,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                         new DisassemblyService(HeldaApp.getContext()).completeDisassembly(disassemblyID, worker, new ServiceHelper.Listener<CompleteDisassemblyResponseMessage>() {
                             @Override
                             public void onComplete(CompleteDisassemblyResponseMessage o) {
-                                Intent intent = new Intent(DisassemblyActivity.this, BarcodeReaderActivity.class);
+                                Intent intent = new Intent(DisassemblyActivity.this, MenuActivity.class);
                                 finish();
                                 startActivity(intent);
                             }

@@ -3,19 +3,20 @@ package com.organon.helda.core.entities;
 import java.io.Serializable;
 
 public class Task extends Entity implements Serializable{
-    private static final int STATE_DONE = 1;
-    private static final int STATE_UNDONE = 0;
-    private static final int STATE_SKIPPED = -1;
+    public enum State {
+        DONE,
+        UNDONE,
+        SKIPPED,
+    }
 
     private String description;
-    private int state = STATE_UNDONE;
-
+    private State state;
     private int duration;
-
-    public Task() {}
+    private int offset;
 
     public Task(int id) {
         setId(id);
+        state = State.UNDONE;
     }
 
     public String getDescription() {
@@ -36,16 +37,21 @@ public class Task extends Entity implements Serializable{
         return this;
     }
 
-    public int getState() {
+    public State getState() {
         return state;
     }
-    public void skipped() {
-        state = STATE_SKIPPED;
+
+    public Task setState(State state) {
+        this.state = state;
+        return this;
     }
-    public void resumed() {
-        state = STATE_UNDONE;
+
+    public int getOffset() {
+        return offset;
     }
-    public void done() {
-        state = STATE_DONE;
+
+    public Task setOffset(int offset) {
+        this.offset = offset;
+        return this;
     }
 }

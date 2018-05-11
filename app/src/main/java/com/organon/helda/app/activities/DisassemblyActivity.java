@@ -37,11 +37,14 @@ import com.organon.helda.app.HeldaApp;
 import com.organon.helda.app.data.HttpTaskTimeGateway;
 import com.organon.helda.app.data.NetworkManager;
 import com.organon.helda.app.fragments.SettingsFragment;
+import com.organon.helda.app.services.DisassemblyService;
+import com.organon.helda.app.services.ServiceHelper;
 import com.organon.helda.app.utils.Utils;
 import com.organon.helda.app.services.TaskTimeService;
 
 import com.organon.helda.core.entities.Plan;
 import com.organon.helda.core.entities.Task;
+import com.organon.helda.core.usecases.completedisassembly.CompleteDisassemblyResponseMessage;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -167,6 +170,26 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         listoButton.setText(KWS_NEXT);
         listoButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
+                if(task == (tasks.size() - 1)) {
+                    boolean allDone = true;
+                    for (int i = 0; i < tasks.size(); i++) {
+                        if (tasks.get(i).getState() == -1) {
+                            allDone = false;
+                            break;
+                        }
+                    }
+
+                    if (allDone) {
+                        new DisassemblyService(HeldaApp.getContext()).completeDisassembly(disassemblyID, worker, new ServiceHelper.Listener<CompleteDisassemblyResponseMessage>() {
+                            @Override
+                            public void onComplete(CompleteDisassemblyResponseMessage o) {
+                                Intent intent = new Intent(DisassemblyActivity.this, MenuActivity.class);
+                                finish();
+                                startActivity(intent);
+                            }
+                        });
+                    }
+                }
 
                 taskChronometer.stop();
 
@@ -185,23 +208,18 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                     @Override
                     public void onComplete(Object response) {
                         if (response == null) {
-                            System.out.println("diss");
-                            System.out.println(disassemblyID);
-                            System.out.println("taskid");
-                            System.out.println(tasks.get(task).getId());
-                            System.out.println("task time");
-                            System.out.println(taskTimeList.get(task));
-                            System.out.println("worker type");
-                            System.out.println(worker);
-                            System.out.println("AQUIII");
                             TextView textView = findViewById(R.id.textView3);
                             //textView.setText("Erro en registro del tiempo de la tarea");
                         }
                     }
                 });
 
+
+
+
                 tasks.get(task).done();
-                task++;
+                if(task != (tasks.size() - 1))
+                    task++;
                 String planStr = getCurrentTask().getDescription();
 
                 //Does not exists in the list
@@ -253,20 +271,20 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         Button anomaliaButton = findViewById(R.id.anomaliaButton);
         anomaliaButton.setText(KWS_ANOMALY);
         anomaliaButton.setOnClickListener(new OnClickListener() {
-              public void onClick(View v) {
-                  repeatTTS.stop();
-                  recognizer.cancel();
-                  recognizer.shutdown();
-                  Intent anomalyActivity = new Intent(DisassemblyActivity.this, AnomalyActivity.class);
-                  anomalyActivity.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                  anomalyActivity.putExtra("currentPlan", plan);
-                  anomalyActivity.putExtra("disassemblyID", disassemblyID);
-                  anomalyActivity.putExtra("task", tasks.get(task).getId());
-                  startActivity(anomalyActivity);
-              }
+            public void onClick(View v) {
+                repeatTTS.stop();
+                recognizer.cancel();
+                recognizer.shutdown();
+                Intent anomalyActivity = new Intent(DisassemblyActivity.this, AnomalyActivity.class);
+                anomalyActivity.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                anomalyActivity.putExtra("currentPlan", plan);
+                anomalyActivity.putExtra("disassemblyID", disassemblyID);
+                anomalyActivity.putExtra("task", tasks.get(task).getId());
+                startActivity(anomalyActivity);
+            }
         });
 
-              
+
         Button paradaButton = findViewById(R.id.paradaButton);
         paradaButton.setText(KWS_PAUSE);
         paradaButton.setOnClickListener(new OnClickListener() {

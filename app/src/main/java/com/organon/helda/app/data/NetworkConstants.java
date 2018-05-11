@@ -12,4 +12,5 @@ public class NetworkConstants {
 
     public static final int TIMEOUT = 10;
 
+    public static final String REGISTER_PAUSE = "pauses/";
 }

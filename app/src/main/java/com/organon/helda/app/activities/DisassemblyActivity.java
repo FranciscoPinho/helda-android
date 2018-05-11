@@ -185,7 +185,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 if(task == (tasks.size() - 1)) {
                     boolean allDone = true;
                     for (int i = 0; i < tasks.size(); i++) {
-                        if (tasks.get(i).getState() == -1) {
+                        if (tasks.get(i).getState() != Task.State.DONE) {
                             allDone = false;
                             break;
                         }

@@ -29,13 +29,13 @@ public class ChooseTasksActivity extends AppCompatActivity {
 
         Button workerA = findViewById(R.id.startAsWorkerA);
         workerA.setOnClickListener(new ChooseTasksListener(WORKER_A));
-        if (disassembly.getWorkerA()) {
+        if (disassembly.getWorkerA() || disassembly.getWorkerADone()) {
             workerA.setVisibility(View.INVISIBLE);
         }
 
         Button workerB = findViewById(R.id.startAsWorkerB);
         workerB.setOnClickListener(new ChooseTasksListener(WORKER_B));
-        if (disassembly.getWorkerB()) {
+        if (disassembly.getWorkerB() || disassembly.getWorkerBDone()) {
             workerB.setVisibility(View.INVISIBLE);
         }
     }

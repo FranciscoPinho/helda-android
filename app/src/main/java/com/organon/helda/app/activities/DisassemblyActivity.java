@@ -209,13 +209,11 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 int taskTimeMiliss = (int) (SystemClock.elapsedRealtime() - taskChronometer.getBase());
                 taskTimeList.put(task, taskTimeMiliss);
 
-                //final String worker = getIntent().getStringExtra("worker");
                 TaskTimeService.insertUpdateTaskTime(disassemblyID, tasks.get(task).getId(), taskTimeList.get(task), worker, new HttpTaskTimeGateway(), new TaskTimeService.Listener() {
                     @Override
                     public void onComplete(Object response) {
                         if (response == null) {
                             TextView textView = findViewById(R.id.textView3);
-                            //textView.setText("Erro en registro del tiempo de la tarea");
                         }
                     }
                 });

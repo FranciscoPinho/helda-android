@@ -7,4 +7,5 @@ public interface DisassemblyGateway {
     Disassembly createDisassembly(String vin);
     Plan startDisassembly(int id, String worker);
     Disassembly completeDisassembly(int id, String worker);
+    Disassembly existDisassembly(String vin);
 }

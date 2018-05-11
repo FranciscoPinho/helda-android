@@ -122,4 +122,45 @@ public class HttpDisassemblyGateway implements DisassemblyGateway {
             throw new RuntimeException(e.getMessage());
         }
     }
+
+    @Override
+    public Disassembly existDisassembly(String vin) {
+        Map<String, String> params = new HashMap<>();
+        params.put("vin", vin);
+
+        NetworkManager networkManager = NetworkManager.getInstance();
+
+        String url = NetworkConstants.BASE_URL + NetworkConstants.EXISTS_DISASSEMBLY;
+        JSONObject res = networkManager.getSync(url, params);
+        if (res == null) {
+            return null;
+        }
+        try {
+            if (res.has("error")) {
+                boolean error = res.getBoolean("error");
+                if (error) return null;
+            }
+
+            if(!res.getBoolean("exists"))
+                return null;
+
+            JSONObject disassembly = res.getJSONObject("disassembly");
+            int id = disassembly.getInt("id");
+            int plan = disassembly.getInt("plan");
+            boolean workerA = disassembly.getBoolean("workerA");
+            boolean workerB = disassembly.getBoolean("workerB");
+            boolean workerADone = disassembly.getBoolean("workerADone");
+            boolean workerBDone = disassembly.getBoolean("workerBDone");
+
+            return new Disassembly(id)
+                    .setPlan(plan)
+                    .setWorkerA(workerA)
+                    .setWorkerB(workerB)
+                    .setWorkerADone(workerADone)
+                    .setWorkerBDone(workerBDone);
+        }
+        catch (JSONException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
 }

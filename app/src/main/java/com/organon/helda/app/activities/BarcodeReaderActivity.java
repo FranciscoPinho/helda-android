@@ -28,6 +28,7 @@ import com.organon.helda.app.services.ServiceHelper;
 import com.organon.helda.app.utils.Utils;
 import com.organon.helda.R;
 import com.organon.helda.core.usecases.createdisassembly.CreateDisassemblyResponseMessage;
+import com.organon.helda.core.usecases.existsdisassembly.ExistDisassemblyResponseMessage;
 
 import java.io.IOException;
 
@@ -97,6 +98,69 @@ public class BarcodeReaderActivity extends AppCompatActivity {
         }
     }
 
+    private void sendCreateDisassemblyRequest(final String vin){
+        new DisassemblyService(HeldaApp.getContext()).createDisassembly(vin, new ServiceHelper.Listener<CreateDisassemblyResponseMessage>() {
+            @Override
+            public void onComplete(CreateDisassemblyResponseMessage response) {
+                if (response.disassembly == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                if (ContextCompat.checkSelfPermission(BarcodeReaderActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
+                                    cameraSource.start(cameraView.getHolder());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            TextView textView = findViewById(R.id.textView);
+                            textView.setText("detecciones activas de nuevo");
+                        }
+                    });
+                } else {
+                    Intent intent = new Intent(BarcodeReaderActivity.this, ChooseTasksActivity.class);
+                    intent.putExtra("disassembly", response.disassembly);
+                    finish();
+                    startActivity(intent);
+                }
+            }
+        });
+    }
+
+    private void sendDisassemblyExistsRequest(final String vin){
+        new DisassemblyService(HeldaApp.getContext()).existDisassembly(vin, new ServiceHelper.Listener<ExistDisassemblyResponseMessage>() {
+            @Override
+            public void onComplete(ExistDisassemblyResponseMessage response) {
+                if(response==null){
+                    //disassembly for this vin does not exist
+                    sendCreateDisassemblyRequest(vin);
+                }
+                else{
+                    if(!response.disassembly.getWorkerBDone() && !response.disassembly.getWorkerADone()){
+                        Intent intent = new Intent(BarcodeReaderActivity.this, ChooseTasksActivity.class);
+                        intent.putExtra("disassembly", response.disassembly);
+                        finish();
+                        startActivity(intent);
+                    }
+                    else
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(BarcodeReaderActivity.this, R.string.disassemblyAlreadyOver, Toast.LENGTH_SHORT).show();
+                                try {
+                                    if (ContextCompat.checkSelfPermission(BarcodeReaderActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
+                                        cameraSource.start(cameraView.getHolder());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                TextView textView = findViewById(R.id.textView);
+                                textView.setText("detecciones activas de nuevo");
+                            }
+                        });
+                }
+            }
+        });
+    }
+
     private void scanBarcode() {
         cameraView.setZOrderMediaOverlay(true);
         cameraSource = new CameraSource.Builder(BarcodeReaderActivity.this, detector)
@@ -133,9 +197,7 @@ public class BarcodeReaderActivity extends AppCompatActivity {
         detector.setProcessor(new Detector.Processor<Barcode>() {
             @Override
             public void release() {
-
             }
-
             @Override
             public void receiveDetections(Detector.Detections<Barcode> detections) {
                 final SparseArray<Barcode> barcodes = detections.getDetectedItems();
@@ -148,7 +210,6 @@ public class BarcodeReaderActivity extends AppCompatActivity {
                     }
 
                     if(connectivity) {
-
                         if(vin!="") {
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -157,31 +218,7 @@ public class BarcodeReaderActivity extends AppCompatActivity {
                                     Toast.makeText(BarcodeReaderActivity.this, detectedBarcodes, Toast.LENGTH_SHORT).show();
                                 }
                             });
-                            new DisassemblyService(HeldaApp.getContext()).createDisassembly(vin, new ServiceHelper.Listener<CreateDisassemblyResponseMessage>() {
-                                @Override
-                                public void onComplete(CreateDisassemblyResponseMessage response) {
-                                    if (response.disassembly == null) {
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                try {
-                                                    if (ContextCompat.checkSelfPermission(BarcodeReaderActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
-                                                        cameraSource.start(cameraView.getHolder());
-                                                } catch (IOException e) {
-                                                    e.printStackTrace();
-                                                }
-                                                TextView textView = findViewById(R.id.textView);
-                                                textView.setText("detecciones activas de nuevo");
-                                            }
-                                        });
-                                    } else {
-                                        Intent intent = new Intent(BarcodeReaderActivity.this, ChooseTasksActivity.class);
-                                        intent.putExtra("disassembly", response.disassembly);
-                                        finish();
-                                        startActivity(intent);
-                                    }
-                                }
-                            });
+                            sendDisassemblyExistsRequest(vin);
                         }
                         else runOnUiThread(new Runnable() {
                             @Override

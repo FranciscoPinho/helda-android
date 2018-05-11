@@ -11,6 +11,7 @@
     <string name="atrás">atrás</string>
     <string name="noConnection">Por favor, compruebe la conexión y vuelva a intentarlo</string>
     <string name="noVin">Por favor, escanear el vin</string>
+    <string name="disassemblyAlreadyOver">Este desmontaje ya ha terminado</string>
     <string name="register_anomaly">DESCRIBIR ANOMALÍA</string>
     <string name="registerText">En esa pantalla usted debe hacer el registro del problema que ocurrió. Puede hacerlo abajo escribindo o grabando su voz.</string>
     <string name="anomalia_registrada">ANOMALÍA REGISTRADA</string>

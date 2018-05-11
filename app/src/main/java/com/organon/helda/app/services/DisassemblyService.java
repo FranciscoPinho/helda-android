@@ -65,6 +65,7 @@ public class DisassemblyService {
                 CompleteDisassemblyRequestMessage request = new CompleteDisassemblyRequestMessage();
                 request.disassemblyId = id;
                 request.worker = worker;
+
                 CompleteDisassembly interactor = new CompleteDisassembly(context);
                 return interactor.handle(request);
             }

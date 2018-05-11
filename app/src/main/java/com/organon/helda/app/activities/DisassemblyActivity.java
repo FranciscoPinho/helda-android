@@ -170,6 +170,26 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         listoButton.setText(KWS_NEXT);
         listoButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
+                if(task == (tasks.size() - 1)) {
+                    boolean allDone = true;
+                    for (int i = 0; i < tasks.size(); i++) {
+                        if (tasks.get(i).getState() == -1) {
+                            allDone = false;
+                            break;
+                        }
+                    }
+
+                    if (allDone) {
+                        new DisassemblyService(HeldaApp.getContext()).completeDisassembly(disassemblyID, worker, new ServiceHelper.Listener<CompleteDisassemblyResponseMessage>() {
+                            @Override
+                            public void onComplete(CompleteDisassemblyResponseMessage o) {
+                                Intent intent = new Intent(DisassemblyActivity.this, BarcodeReaderActivity.class);
+                                finish();
+                                startActivity(intent);
+                            }
+                        });
+                    }
+                }
 
                 taskChronometer.stop();
 
@@ -188,42 +208,18 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                     @Override
                     public void onComplete(Object response) {
                         if (response == null) {
-                            System.out.println("diss");
-                            System.out.println(disassemblyID);
-                            System.out.println("taskid");
-                            System.out.println(tasks.get(task).getId());
-                            System.out.println("task time");
-                            System.out.println(taskTimeList.get(task));
-                            System.out.println("worker type");
-                            System.out.println(worker);
-                            System.out.println("AQUIII");
                             TextView textView = findViewById(R.id.textView3);
                             //textView.setText("Erro en registro del tiempo de la tarea");
                         }
                     }
                 });
 
-                boolean allDone = true;
-                for(int i = 0; i <= tasks.size(); i++) {
-                    if(tasks.get(i).getState() == -1 ) {
-                        allDone = false;
-                        break;
-                    }
-                }
 
-                if(allDone) {
-                    new DisassemblyService(HeldaApp.getContext()).completeDisassembly(disassemblyID, worker, new ServiceHelper.Listener<CompleteDisassemblyResponseMessage>() {
-                        @Override
-                        public void onComplete(CompleteDisassemblyResponseMessage o) {
-                            Intent intent = new Intent(DisassemblyActivity.this, BarcodeReaderActivity.class);
-                            finish();
-                            startActivity(intent);
-                        }
-                    });
-                }
+
 
                 tasks.get(task).done();
-                task++;
+                if(task != (tasks.size() - 1))
+                    task++;
                 String planStr = getCurrentTask().getDescription();
 
                 //Does not exists in the list

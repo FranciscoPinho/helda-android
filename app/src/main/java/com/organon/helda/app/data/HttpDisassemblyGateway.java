@@ -93,7 +93,7 @@ public class HttpDisassemblyGateway implements DisassemblyGateway {
     @Override
     public Disassembly completeDisassembly(int id, String worker) {
         Map<String, String> params = new HashMap<>();
-        params.put("worker", worker);
+        params.put("worker", String.valueOf(worker));
 
         NetworkManager networkManager = NetworkManager.getInstance();
 

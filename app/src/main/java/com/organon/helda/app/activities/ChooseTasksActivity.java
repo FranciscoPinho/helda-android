@@ -18,6 +18,7 @@ public class ChooseTasksActivity extends AppCompatActivity {
     private static final String WORKER_B = "B";
 
     private Disassembly disassembly;
+    private boolean resume;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +27,7 @@ public class ChooseTasksActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         disassembly = (Disassembly)intent.getSerializableExtra("disassembly");
-
+        resume = intent.getBooleanExtra("resume",false);
         Button workerA = findViewById(R.id.startAsWorkerA);
         workerA.setOnClickListener(new ChooseTasksListener(WORKER_A));
         if (disassembly.getWorkerA() || disassembly.getWorkerADone()) {
@@ -49,17 +50,18 @@ public class ChooseTasksActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View view) {
-            new DisassemblyService(HeldaApp.getContext()).startDisassembly(disassembly.getId(), worker, new ServiceHelper.Listener<StartDisassemblyResponseMessage>() {
-                @Override
-                public void onComplete(StartDisassemblyResponseMessage o) {
-                    Intent intent = new Intent(ChooseTasksActivity.this, DisassemblyActivity.class);
-                    intent.putExtra("worker", worker);
-                    intent.putExtra("currentPlan", o.plan);
-                    intent.putExtra("disassemblyID", disassembly.getId());
-                    finish();
-                    startActivity(intent);
-                }
-            });
+            if(!resume)
+                new DisassemblyService(HeldaApp.getContext()).startDisassembly(disassembly.getId(), worker, new ServiceHelper.Listener<StartDisassemblyResponseMessage>() {
+                    @Override
+                    public void onComplete(StartDisassemblyResponseMessage o) {
+                        Intent intent = new Intent(ChooseTasksActivity.this, DisassemblyActivity.class);
+                        intent.putExtra("worker", worker);
+                        intent.putExtra("currentPlan", o.plan);
+                        intent.putExtra("disassemblyID", disassembly.getId());
+                        finish();
+                        startActivity(intent);
+                    }
+                });
         }
     }
 }

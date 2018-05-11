@@ -103,25 +103,30 @@ public class BarcodeReaderActivity extends AppCompatActivity {
             @Override
             public void onComplete(CreateDisassemblyResponseMessage response) {
                 if (response.disassembly == null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                if (ContextCompat.checkSelfPermission(BarcodeReaderActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
-                                    cameraSource.start(cameraView.getHolder());
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            TextView textView = findViewById(R.id.textView);
-                            textView.setText("detecciones activas de nuevo");
-                        }
-                    });
+                    resetCameraWithError(R.string.disassemblyCreateError);
                 } else {
                     Intent intent = new Intent(BarcodeReaderActivity.this, ChooseTasksActivity.class);
                     intent.putExtra("disassembly", response.disassembly);
                     finish();
                     startActivity(intent);
                 }
+            }
+        });
+    }
+
+    private void resetCameraWithError(final int error){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(BarcodeReaderActivity.this, error, Toast.LENGTH_SHORT).show();
+                try {
+                    if (ContextCompat.checkSelfPermission(BarcodeReaderActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
+                        cameraSource.start(cameraView.getHolder());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                TextView textView = findViewById(R.id.textView);
+                textView.setText("detecciones activas de nuevo");
             }
         });
     }
@@ -135,27 +140,19 @@ public class BarcodeReaderActivity extends AppCompatActivity {
                     sendCreateDisassemblyRequest(vin);
                 }
                 else{
-                    if(!response.disassembly.getWorkerBDone() && !response.disassembly.getWorkerADone()){
+                    if(response.disassembly.getWorkerB() && response.disassembly.getWorkerA()
+                            || response.disassembly.getWorkerADone() && response.disassembly.getWorkerB()
+                            || response.disassembly.getWorkerBDone() && response.disassembly.getWorkerA())
+                        resetCameraWithError(R.string.disassemblyOccupied);
+                    else if(response.disassembly.getWorkerBDone() && response.disassembly.getWorkerADone())
+                        resetCameraWithError(R.string.disassemblyAlreadyOver);
+                    else {
                         Intent intent = new Intent(BarcodeReaderActivity.this, ChooseTasksActivity.class);
                         intent.putExtra("disassembly", response.disassembly);
+                        intent.putExtra("resume", true);
                         finish();
                         startActivity(intent);
                     }
-                    else
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(BarcodeReaderActivity.this, R.string.disassemblyAlreadyOver, Toast.LENGTH_SHORT).show();
-                                try {
-                                    if (ContextCompat.checkSelfPermission(BarcodeReaderActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
-                                        cameraSource.start(cameraView.getHolder());
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                                TextView textView = findViewById(R.id.textView);
-                                textView.setText("detecciones activas de nuevo");
-                            }
-                        });
                 }
             }
         });

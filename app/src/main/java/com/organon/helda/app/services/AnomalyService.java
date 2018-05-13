@@ -1,7 +1,5 @@
 package com.organon.helda.app.services;
 
-import android.os.health.SystemHealthManager;
-
 import com.organon.helda.app.utils.Utils;
 import com.organon.helda.core.Context;
 import com.organon.helda.core.gateways.AnomalyGateway;
@@ -20,7 +18,7 @@ public class AnomalyService {
         void onComplete(Object response);
     }
 
-    public static void insertAnomaly(final int disasembly,final String anomaly_date, final String description, final int task, final Utils.State state, final AnomalyGateway gateway, final AnomalyService.Listener listener) {
+    public static void insertAnomaly(final int disasembly,final String anomaly_date, final String description, final int task, final String workerID, final Utils.State state, final AnomalyGateway gateway, final AnomalyService.Listener listener) {
         ServiceHelper helper = new ServiceHelper(new ServiceHelper.Runnable() {
             @Override
             public Object run() {
@@ -29,6 +27,7 @@ public class AnomalyService {
                 request.anomalyDate = anomaly_date;
                 request.description = description;
                 request.task = task;
+                request.workerID = workerID;
                 request.state = state;
                 Context executionContext = new Context();
                 executionContext.anomalyGateway = gateway;

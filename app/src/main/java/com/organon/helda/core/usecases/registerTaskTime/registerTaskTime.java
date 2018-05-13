@@ -4,10 +4,6 @@ import com.organon.helda.core.Context;
 import com.organon.helda.core.usecases.ErrorCode;
 import com.organon.helda.core.usecases.RequestHandler;
 
-import com.organon.helda.core.Context;
-import com.organon.helda.core.usecases.ErrorCode;
-import com.organon.helda.core.usecases.RequestHandler;
-
 public class registerTaskTime extends RequestHandler<registerTaskTimeRequestMessage, registerTaskTimeResponseMessage> {
 
     public registerTaskTime(Context context) {
@@ -41,7 +37,7 @@ public class registerTaskTime extends RequestHandler<registerTaskTimeRequestMess
 
     @Override
     protected registerTaskTimeResponseMessage onValid(registerTaskTimeRequestMessage request) {
-        context.taskTimeTableGateway.insertUpdateTaskTime(request.disassembly, request.taskId, request.taskTime, request.role);
+        context.taskTimeTableGateway.insertUpdateTaskTime(request.disassembly, request.taskId, request.taskTime, request.role, request.workerID);
         registerTaskTimeResponseMessage responseMessage = new registerTaskTimeResponseMessage();
         return responseMessage;
     }

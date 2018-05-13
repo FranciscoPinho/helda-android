@@ -57,7 +57,7 @@ public class AnomalyProcessActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(connectivity) {
                     String timestamp = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date());
-                    AnomalyService.insertAnomaly(disassemblyID,  String.valueOf(timestamp), anomalyText,task, Utils.State.skipped, new HttpAnomalyGateway(), new Listener() {
+                    AnomalyService.insertAnomaly(disassemblyID,  String.valueOf(timestamp), anomalyText,task, app.workerID, Utils.State.skipped, new HttpAnomalyGateway(), new Listener() {
                         @Override
                         public void onComplete(Object response) {
                             if (response == null) {
@@ -79,7 +79,7 @@ public class AnomalyProcessActivity extends AppCompatActivity {
                 final Intent intent = new Intent(AnomalyProcessActivity.this, BarcodeReaderActivity.class);
                 if(connectivity) {
                     String timestamp = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date());
-                    AnomalyService.insertAnomaly(disassemblyID,  String.valueOf(timestamp), anomalyText,task, Utils.State.stopped, new HttpAnomalyGateway(), new Listener() {
+                    AnomalyService.insertAnomaly(disassemblyID,  String.valueOf(timestamp), anomalyText,task, app.workerID, Utils.State.stopped, new HttpAnomalyGateway(), new Listener() {
                         @Override
                         public void onComplete(Object response) {
                             if (response == null) {

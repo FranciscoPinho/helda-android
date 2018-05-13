@@ -12,7 +12,7 @@ public class TaskTimeService {
         void onComplete(Object response);
     }
 
-    public static void insertUpdateTaskTime(final int disasembly, final int taskId, final int taskTime, final String role, final TaskTimeTableGateway gateway, final TaskTimeService.Listener listener) {
+    public static void insertUpdateTaskTime(final int disasembly, final int taskId, final int taskTime, final String role, final String workerID, final TaskTimeTableGateway gateway, final TaskTimeService.Listener listener) {
         ServiceHelper helper = new ServiceHelper(new ServiceHelper.Runnable() {
             @Override
             public Object run() {
@@ -21,6 +21,7 @@ public class TaskTimeService {
                 request.taskId = taskId;
                 request.taskTime = taskTime;
                 request.role = role;
+                request.workerID = workerID;
                 Context executionContext = new Context();
                 executionContext.taskTimeTableGateway = gateway;
                 registerTaskTime interactor = new registerTaskTime(executionContext);

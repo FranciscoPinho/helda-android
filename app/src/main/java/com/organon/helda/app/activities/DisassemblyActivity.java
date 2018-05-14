@@ -43,7 +43,6 @@ import com.organon.helda.app.fragments.SettingsFragment;
 import com.organon.helda.app.services.PauseService;
 import com.organon.helda.app.services.DisassemblyService;
 import com.organon.helda.app.services.ServiceHelper;
-import com.organon.helda.app.services.PauseService;
 import com.organon.helda.app.utils.Utils;
 import com.organon.helda.app.services.TaskTimeService;
 

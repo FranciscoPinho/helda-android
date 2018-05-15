@@ -121,9 +121,8 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_disassembly);
-        final Toolbar toolbar = findViewById(R.id.my_toolbar);
-        setSupportActionBar(toolbar);
-        viewSwitcher =   findViewById(R.id.viewSwitcher);
+
+        viewSwitcher = findViewById(R.id.viewSwitcher);
         detailedView= findViewById(R.id.detailedMode);
         simpleView = findViewById(R.id.simpleMode);
         pauseDialog = new Dialog(this);
@@ -182,7 +181,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
 
         TextView operarioViewer = findViewById(R.id.OperarioView);
-        operarioViewer.setText("Model: " + plan.getModel().toString());
+        operarioViewer.setText("Modelo: " + plan.getModel().toString());
         operarioViewer.setGravity(Gravity.CENTER);
         final TextView taskViewer = findViewById(R.id.taskViewer);
         taskViewer.addTextChangedListener(new TextWatcher() {
@@ -371,6 +370,22 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 pauseDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 pauseDialog.show();
 
+            }
+        });
+
+        Button skippedTasksButton = findViewById(R.id.skippedTasksButton);
+        skippedTasksButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ArrayList<Task> tasks = (ArrayList<Task>) getSkippedTasks();
+                if (tasks.isEmpty()) {
+                    Toast toast = Toast.makeText(getApplicationContext(), "Ninguna tarea fue omitida", Toast.LENGTH_SHORT);
+                    toast.show();
+                } else {
+                    Intent intent = new Intent(getApplicationContext(), PickSkippedTaskActivity.class);
+                    intent.putExtra("tasks", tasks);
+                    startActivityForResult(intent, PICK_SKIPPED_TASK_REQUEST);
+                }
             }
         });
     }

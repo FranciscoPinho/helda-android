@@ -1,7 +1,5 @@
 package com.organon.helda.core.usecases.registerAnomaly;
 
-import android.content.Context;
-
 import com.organon.helda.core.usecases.ErrorCode;
 import com.organon.helda.core.usecases.RequestHandler;
 
@@ -36,7 +34,7 @@ public class RegisterAnomaly extends RequestHandler<RegisterAnomalyRequestMessag
 
     @Override
     protected RegisterAnomalyResponseMessage onValid(RegisterAnomalyRequestMessage request) {
-        int id = context.anomalyGateway.insertAnomaly(request.disassembly, request.anomalyDate, request.description, request.task, request.state);
+        int id = context.anomalyGateway.insertAnomaly(request.disassembly, request.anomalyDate, request.description, request.task, request.workerID, request.state);
         RegisterAnomalyResponseMessage response = new RegisterAnomalyResponseMessage();
         response.id = id;
         return response;

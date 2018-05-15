@@ -5,4 +5,5 @@ public class registerTaskTimeRequestMessage {
     public int taskId;
     public int taskTime;
     public String role;
+    public String workerID;
 }

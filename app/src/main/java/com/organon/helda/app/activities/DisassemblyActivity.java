@@ -235,7 +235,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 int taskTimeMiliss = (int) (SystemClock.elapsedRealtime() - taskChronometer.getBase());
                 taskTimeList.put(tasks.get(task).getId(), taskTimeMiliss);
 
-                TaskTimeService.insertUpdateTaskTime(disassemblyID, tasks.get(task).getId(), taskTimeList.get(tasks.get(task).getId()), worker, new HttpTaskTimeGateway(), new TaskTimeService.Listener() {
+                TaskTimeService.insertUpdateTaskTime(disassemblyID, tasks.get(task).getId(), taskTimeList.get(tasks.get(task).getId()), worker, app.workerID, new HttpTaskTimeGateway(), new TaskTimeService.Listener() {
                     @Override
                     public void onComplete(Object response) {
                         if (response == null) {

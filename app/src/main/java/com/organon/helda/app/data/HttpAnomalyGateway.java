@@ -13,14 +13,13 @@ import java.util.Map;
 public class HttpAnomalyGateway implements AnomalyGateway {
 
 
-    public int insertAnomaly(int disassembly, String anomalyDate, String description, int task, Utils.State state){
+    public int insertAnomaly(int disassembly, String anomalyDate, String description, int task, String workerID, Utils.State state){
         Map<String, String> params = new HashMap<>();
         params.put("disassembly", String.valueOf(disassembly));
         params.put("description", description);
         params.put("task", String.valueOf(task));
         params.put("state", String.valueOf(state));
-        // TODO: Use the actual worker ID once login is implemented
-        params.put("worker", "1");
+        params.put("worker", workerID);
 
         NetworkManager networkManager = NetworkManager.getInstance();
         JSONObject res = networkManager.postSync(NetworkConstants.BASE_URL + NetworkConstants.REGISTER_ANOMALY, params);

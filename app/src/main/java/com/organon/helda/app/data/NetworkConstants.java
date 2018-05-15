@@ -10,6 +10,7 @@ public class NetworkConstants {
     public static final String COMPLETE_DISASSEMBLY = "disassemblies/%s/complete";
     public static final String START_DISASSEMBLY = "disassemblies/%s";
     public static final String REGISTER_TASKTIME = "completed-tasks/";
+    public static final String WORKER_LOGIN = "workers/login";
 
     public static final int TIMEOUT = 10;
 

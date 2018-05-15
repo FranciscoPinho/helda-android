@@ -202,9 +202,9 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
         taskViewer.setGravity(Gravity.CENTER);
         Button simpleListo = findViewById(R.id.simpleListoButton);
-        simpleListo.setText(KWS_NEXT);
+        simpleListo.setText(capitalize(KWS_NEXT));
         final Button listoButton = findViewById(R.id.listoButton);
-        listoButton.setText(KWS_NEXT);
+        listoButton.setText(capitalize(KWS_NEXT));
         listoButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 if(task == (tasks.size() - 1)) {
@@ -268,7 +268,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         });
 
         Button atrasButton = findViewById(R.id.atrasButton);
-        atrasButton.setText(KWS_REVERT);
+        atrasButton.setText(capitalize(KWS_REVERT));
         atrasButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 if (task != 0) {
@@ -292,7 +292,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
         });
 
         Button anomaliaButton = findViewById(R.id.anomaliaButton);
-        anomaliaButton.setText(KWS_ANOMALY);
+        anomaliaButton.setText(capitalize(KWS_ANOMALY));
         anomaliaButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 repeatTTS.stop();
@@ -309,7 +309,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
 
 
         Button paradaButton = findViewById(R.id.paradaButton);
-        paradaButton.setText(KWS_PAUSE);
+        paradaButton.setText(capitalize(KWS_PAUSE));
         paradaButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 if (viewSwitcher.getCurrentView() != detailedView) {
@@ -730,5 +730,9 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
             }
         }
         return result;
+    }
+
+    private String capitalize(String input) {
+        return input.substring(0, 1).toUpperCase() + input.substring(1);
     }
 }

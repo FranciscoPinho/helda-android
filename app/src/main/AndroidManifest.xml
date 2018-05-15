@@ -47,7 +47,7 @@
         <activity
             android:name=".app.activities.PickSkippedTaskActivity"
             android:label="@string/skipped_tasks"
-            android:theme="@style/Theme.AppCompat" />
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
     </application>
 
 </manifest>

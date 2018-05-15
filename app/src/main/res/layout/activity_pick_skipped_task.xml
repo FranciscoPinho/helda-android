@@ -6,10 +6,25 @@
     android:layout_height="match_parent"
     tools:context=".app.activities.PickSkippedTaskActivity">
 
+    <TextView
+        android:id="@+id/tareasSaltadasTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#fff"
+        android:text="Tareas Saltadas"
+        android:gravity="center"
+        android:textSize="24sp"
+        android:layout_margin="20dp"
+        android:paddingTop="20dp"
+        />
+
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/pick_skipped_task_list"
         android:scrollbars="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/tareasSaltadasTv"
+        />
 
 </android.support.constraint.ConstraintLayout>

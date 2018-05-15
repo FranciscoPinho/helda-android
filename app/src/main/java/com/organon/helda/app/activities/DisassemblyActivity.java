@@ -35,9 +35,11 @@ import android.widget.ViewSwitcher;
 
 import com.organon.helda.R;
 import com.organon.helda.app.HeldaApp;
+import com.organon.helda.app.data.HttpPauseGateway;
 import com.organon.helda.app.data.HttpTaskTimeGateway;
 import com.organon.helda.app.data.NetworkManager;
 import com.organon.helda.app.fragments.SettingsFragment;
+import com.organon.helda.app.services.PauseService;
 import com.organon.helda.app.services.DisassemblyService;
 import com.organon.helda.app.services.ServiceHelper;
 import com.organon.helda.app.services.TaskTimeService;
@@ -341,6 +343,22 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                 backButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        pauseChronometer.stop();
+
+                        //Task time in miliseconds
+                        int pauseTimeMiliss = (int) (SystemClock.elapsedRealtime() - pauseChronometer.getBase());
+
+                        PauseService.insertPause(disassemblyID, pauseTimeMiliss, worker, new HttpPauseGateway(), new PauseService.Listener() {
+                            @Override
+                            public void onComplete(Object response) {
+                                if (response == null) {
+                                    TextView textView = findViewById(R.id.textView3);
+                                    textView.setText("Erro en registro del tiempo de la parada");
+                                }
+                            }
+                        });
+
                         taskChronometer.setBase(taskChronometer.getBase() + SystemClock.elapsedRealtime() - pauseInitialTime);
                         pauseInitialTime = 0;
                         taskChronometer.start();

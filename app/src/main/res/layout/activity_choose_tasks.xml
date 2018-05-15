@@ -7,57 +7,40 @@
     android:backgroundTint="@android:color/darker_gray"
     tools:context=".app.activities.MenuActivity">
 
-    <android.support.constraint.ConstraintLayout
+    <TextView
+        android:text="Por favor seleccione el papel que desea desempeñar"
+        android:textSize="24dp"
+        android:textColor="#fff"
+        android:gravity="center"
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_height="410dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        android:paddingTop="100dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp" />
 
-        <Button
-            android:id="@+id/startAsWorkerB"
-            android:layout_width="220dp"
-            android:layout_height="50dp"
-            android:layout_marginBottom="140dp"
-            android:layout_marginEnd="140dp"
-            android:layout_marginStart="141dp"
-            android:layout_marginTop="40dp"
-            android:text="@string/workerBButton"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.504"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/startAsWorkerA" />
+    <Button
+        android:id="@+id/startAsWorkerB"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp"
+        android:text="@string/workerBButton"
+        android:background="@drawable/button_primary"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
-        <Button
-            android:id="@+id/startAsWorkerA"
-            android:layout_width="220dp"
-            android:layout_height="50dp"
-            android:layout_marginEnd="140dp"
-            android:layout_marginStart="140dp"
-            android:layout_marginTop="140dp"
-            android:text="@string/workerAButton"
-            app:layout_constraintBottom_toTopOf="@+id/startAsWorkerB"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </android.support.constraint.ConstraintLayout>
-
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="@dimen/cast_mini_controller_icon_width"
-        android:layout_height="@dimen/cast_mini_controller_icon_height"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-        app:srcCompat="@drawable/peugeot_logo" />
+    <Button
+        android:id="@+id/startAsWorkerA"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="10dp"
+        android:text="@string/workerAButton"
+        android:background="@drawable/button_primary"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toTopOf="@+id/startAsWorkerB" />
 
 
 </android.support.constraint.ConstraintLayout>

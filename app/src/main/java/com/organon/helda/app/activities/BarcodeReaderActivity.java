@@ -63,7 +63,7 @@ public class BarcodeReaderActivity extends AppCompatActivity {
 
         detector = new BarcodeDetector.Builder(getApplicationContext()).build();
         if(!detector.isOperational()){
-            txtView.setText("Could not set up the detector!");
+            Toast.makeText(this, "No se puede configurar el detector. Por favor, compruebe los permisos de la aplicación.", Toast.LENGTH_LONG);
             return;
         }
         cameraView = findViewById(R.id.cameraSurface);
@@ -125,8 +125,6 @@ public class BarcodeReaderActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                TextView textView = findViewById(R.id.textView);
-                textView.setText("detecciones activas de nuevo");
             }
         });
     }
@@ -201,7 +199,7 @@ public class BarcodeReaderActivity extends AppCompatActivity {
                     for(int i=0; i<barcodes.size();i++){
                         if(barcodes.valueAt(i).rawValue.length()==8){
                             vin = barcodes.valueAt(i).rawValue;
-                            detectedBarcodes = "Barcode "+i+": "+barcodes.valueAt(i).rawValue;
+                            detectedBarcodes = "VIN: " +barcodes.valueAt(i).rawValue;
                         }
                     }
 

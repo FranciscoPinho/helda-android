@@ -76,7 +76,7 @@ public class AnomalyProcessActivity extends AppCompatActivity {
         stopButton = findViewById(R.id.stopButton);
         stopButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                final Intent intent = new Intent(AnomalyProcessActivity.this, BarcodeReaderActivity.class);
+                final Intent intent = new Intent(AnomalyProcessActivity.this, MenuActivity.class);
                 if(connectivity) {
                     String timestamp = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date());
                     AnomalyService.insertAnomaly(disassemblyID,  String.valueOf(timestamp), anomalyText,task, app.workerID, Utils.State.stopped, new HttpAnomalyGateway(), new Listener() {

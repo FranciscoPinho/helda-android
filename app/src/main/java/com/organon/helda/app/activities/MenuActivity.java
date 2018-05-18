@@ -31,6 +31,7 @@ public class MenuActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.Theme_AppCompat_NoActionBar);
         super.onCreate(savedInstanceState);
+        NetworkManager.getInstance(MenuActivity.this);
         app = (HeldaApp)getApplication();
 
         setContentView(R.layout.activity_menu);
@@ -77,24 +78,40 @@ public class MenuActivity extends AppCompatActivity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String username = user.getText().toString();
-                String password = pass.getText().toString();
-
-                NetworkManager.getInstance(MenuActivity.this);
-
-                new WorkerService(HeldaApp.getContext()).workerLogin(username, password, new ServiceHelper.Listener<WorkerLoginResponseMessage>() {
+                final String username = user.getText().toString();
+                final String password = pass.getText().toString();
+                final String serverIP =  sharedPref.getString("serverIP","");
+                final String port = sharedPref.getString("port","");
+                AsyncTask.execute(new Runnable() {
                     @Override
-                    public void onComplete(WorkerLoginResponseMessage response) {
-                        if (response.workerID == -1) {
-                            errorMessage.setText("Inicio de sesión incorrecta");
-                        } else {
-                            app.workerID = ""+response.workerID;
-                            scan.setVisibility(View.VISIBLE);
-                            logout.setVisibility(View.VISIBLE);
-                            errorMessage.setVisibility(View.GONE);
-                            submit.setVisibility(View.GONE);
-                            user.setVisibility(View.GONE);
-                            pass.setVisibility(View.GONE);
+                    public void run() {
+                        if(Utils.isValidIPV4(serverIP) && Utils.isValidPort(port)) {
+                                Utils.resetSystemProperties(sharedPref);
+                                new WorkerService(HeldaApp.getContext()).workerLogin(username, password, new ServiceHelper.Listener<WorkerLoginResponseMessage>() {
+                                    @Override
+                                    public void onComplete(WorkerLoginResponseMessage response) {
+                                        if (response.workerID == -1) {
+                                            errorMessage.setText("Inicio de sesión incorrecta");
+                                        } else {
+                                            app.workerID = "" + response.workerID;
+                                            scan.setVisibility(View.VISIBLE);
+                                            logout.setVisibility(View.VISIBLE);
+                                            errorMessage.setVisibility(View.GONE);
+                                            submit.setVisibility(View.GONE);
+                                            user.setVisibility(View.GONE);
+                                            pass.setVisibility(View.GONE);
+                                        }
+                                    }
+                                });
+                            }
+                        else{
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    TextView error = findViewById(R.id.errorText);
+                                    error.setText("IP/Port del servidor inválido");
+                                }
+                                });
                         }
                     }
                 });

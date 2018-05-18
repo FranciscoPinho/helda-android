@@ -14,6 +14,7 @@ import java.util.Map;
 public class HttpWorkerGateway implements WorkerGateway {
     @Override
     public int workerLogin(String username, byte[] attempt) {
+        NetworkManager networkManager = NetworkManager.getInstance();
         StringBuilder url = new StringBuilder(NetworkConstants.BASE_URL);
         url.append(NetworkConstants.WORKER_LOGIN);
 
@@ -25,7 +26,7 @@ public class HttpWorkerGateway implements WorkerGateway {
             e.printStackTrace();
         }
 
-        NetworkManager networkManager = NetworkManager.getInstance();
+
         JSONObject res = networkManager.postSync(url.toString(), params);
         if(res == null) return -1;
 

@@ -259,16 +259,29 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                     if(getCurrentTask().getState() == Task.State.SKIPPED){
                         getCurrentTask().setState(Task.State.DONE);
                         ArrayList<Task> skippedTasks = (ArrayList<Task>) getSkippedTasks();
-                        //no more skipped tasks means all tasks are done
+                        //no more skipped tasks left
                         if(skippedTasks.size() == 0){
-                            new DisassemblyService(HeldaApp.getContext()).completeDisassembly(disassemblyID, worker, new ServiceHelper.Listener<CompleteDisassemblyResponseMessage>() {
-                                @Override
-                                public void onComplete(CompleteDisassemblyResponseMessage o) {
-                                    Intent intent = new Intent(DisassemblyActivity.this, MenuActivity.class);
-                                    finish();
-                                    startActivity(intent);
+                            boolean allDone = true;
+                            int i;
+                            for (i = 0; i < tasks.size(); i++) {
+                                if (tasks.get(i).getState() == Task.State.UNDONE) {
+                                    allDone = false;
+                                    break;
                                 }
-                            });
+                            }
+                            //if no tasks with undone state are found means all tasks are done
+                            if(allDone){
+                                new DisassemblyService(HeldaApp.getContext()).completeDisassembly(disassemblyID, worker, new ServiceHelper.Listener<CompleteDisassemblyResponseMessage>() {
+                                    @Override
+                                    public void onComplete(CompleteDisassemblyResponseMessage o) {
+                                        Intent intent = new Intent(DisassemblyActivity.this, MenuActivity.class);
+                                        finish();
+                                        startActivity(intent);
+                                    }
+                                });
+                            }else{
+                                task = i;
+                            }
                         }else{
                             task = getTaskIndex(skippedTasks.get(0));
                         }

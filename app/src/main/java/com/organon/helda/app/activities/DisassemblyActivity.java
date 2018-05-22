@@ -20,6 +20,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.support.design.widget.Snackbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -100,6 +101,9 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
     private long pauseInitialTime = 0;
 
     private boolean pause = false;
+
+    //used to show a message when skipped tasks exist
+    boolean showSnack = false;
 
     private Map<Integer, Integer> taskTimeList = new HashMap<>();
 
@@ -213,6 +217,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                     for (int i = 0; i < tasks.size(); i++) {
                         if (tasks.get(i).getState() != Task.State.DONE) {
                             allDone = false;
+                            showSnack = true;
                             break;
                         }
                     }
@@ -229,35 +234,63 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
                     }
                 }
 
-                taskChronometer.stop();
+                //show message if after last task there are still skipped tasks to do
+                if(showSnack){
+                    showSnack = false;
+                    Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Todavía hay tareas saltadas para hacer", Snackbar.LENGTH_SHORT);
+                    snackbar.show();
+                }else{
+                    taskChronometer.stop();
 
-                //Task time in miliseconds
-                int taskTimeMiliss = (int) (SystemClock.elapsedRealtime() - taskChronometer.getBase());
-                taskTimeList.put(tasks.get(task).getId(), taskTimeMiliss);
+                    //Task time in miliseconds
+                    int taskTimeMiliss = (int) (SystemClock.elapsedRealtime() - taskChronometer.getBase());
+                    taskTimeList.put(tasks.get(task).getId(), taskTimeMiliss);
 
-                TaskTimeService.insertUpdateTaskTime(disassemblyID, tasks.get(task).getId(), taskTimeList.get(tasks.get(task).getId()), worker, app.workerID, new HttpTaskTimeGateway(), new TaskTimeService.Listener() {
-                    @Override
-                    public void onComplete(Object response) {
-                        if (response == null) {
-                            TextView textView = findViewById(R.id.textView3);
+                    TaskTimeService.insertUpdateTaskTime(disassemblyID, tasks.get(task).getId(), taskTimeList.get(tasks.get(task).getId()), worker, app.workerID, new HttpTaskTimeGateway(), new TaskTimeService.Listener() {
+                        @Override
+                        public void onComplete(Object response) {
+                            if (response == null) {
+                                TextView textView = findViewById(R.id.textView3);
+                            }
                         }
+                    });
+
+                    //if task is skipped, go to next skipped task
+                    if(getCurrentTask().getState() == Task.State.SKIPPED){
+                        getCurrentTask().setState(Task.State.DONE);
+                        ArrayList<Task> skippedTasks = (ArrayList<Task>) getSkippedTasks();
+                        //no more skipped tasks means all tasks are done
+                        if(skippedTasks.size() == 0){
+                            new DisassemblyService(HeldaApp.getContext()).completeDisassembly(disassemblyID, worker, new ServiceHelper.Listener<CompleteDisassemblyResponseMessage>() {
+                                @Override
+                                public void onComplete(CompleteDisassemblyResponseMessage o) {
+                                    Intent intent = new Intent(DisassemblyActivity.this, MenuActivity.class);
+                                    finish();
+                                    startActivity(intent);
+                                }
+                            });
+                        }else{
+                            task = getTaskIndex(skippedTasks.get(0));
+                        }
+                    }else{
+                        getCurrentTask().setState(Task.State.DONE);
+                        nextTask();
                     }
-                });
 
-                getCurrentTask().setState(Task.State.DONE);
-                nextTask();
+                    //Does not exists in the list
+                    if(taskTimeList.get(tasks.get(task).getId()) == null)
+                        taskChronometer.setBase(SystemClock.elapsedRealtime());
+                    else
+                        taskChronometer.setBase(SystemClock.elapsedRealtime() - taskTimeList.get(tasks.get(task).getId()));
+                    //taskChronometer.
 
-                //Does not exists in the list
-                if(taskTimeList.get(tasks.get(task).getId()) == null)
-                    taskChronometer.setBase(SystemClock.elapsedRealtime());
-                else
-                    taskChronometer.setBase(SystemClock.elapsedRealtime() - taskTimeList.get(tasks.get(task).getId()));
-                //taskChronometer.
+                    taskChronometer.start();
 
-                taskChronometer.start();
+                    String planStr = getCurrentTask().getDescription();
+                    taskViewer.setText(planStr);
+                }
 
-                String planStr = getCurrentTask().getDescription();
-                taskViewer.setText(planStr);
+
             }
         });
 
@@ -715,5 +748,14 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
             }
         }
         return result;
+    }
+
+    private int getTaskIndex(Task currentTask){
+        int i;
+        for (i = 0;i < tasks.size() ;i++) {
+            if (tasks.get(i).getDescription().equals(currentTask.getDescription()))
+                break;
+        }
+        return i;
     }
 }

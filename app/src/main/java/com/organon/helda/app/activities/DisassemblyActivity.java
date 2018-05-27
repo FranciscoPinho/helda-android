@@ -73,7 +73,7 @@ public class DisassemblyActivity extends AppCompatActivity implements Recognitio
     private static final String KWS_REVERT = "reaparecer";
     private static final String KWS_PAUSE = "interrumpir";
     private static final String KWS_STOP_PAUSE = "reanudar";
-    private static final String KWS_ANOMALY = "irregularidad";
+    private static final String KWS_ANOMALY = "anomalia";
 
     /* Menu options */
     private static final int SIMPLE_MENU_OPTION_ID = 1;

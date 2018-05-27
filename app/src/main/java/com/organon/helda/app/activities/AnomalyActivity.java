@@ -139,7 +139,6 @@ public class AnomalyActivity extends AppCompatActivity {
         intent.putExtra("disassemblyID", disassemblyID);
         intent.putExtra("currentPlan", plan);
         intent.putExtra("task", task);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         finish();
         startActivity(intent);
     }
